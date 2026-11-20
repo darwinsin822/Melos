@@ -587,8 +587,8 @@ private fun CrossfadePage(back: () -> Unit) {
                     onChecked = automix::changeMixPodcasts, detail = stringResource(R.string.settings_automix_podcasts_detail))
             }
             row {
-                ImmersiveSwitchRow(stringResource(R.string.settings_automix_orpheon), checked = automix.orpheon,
-                    onChecked = automix::changeOrpheon, detail = stringResource(R.string.settings_automix_orpheon_detail))
+                ImmersiveSwitchRow(stringResource(R.string.settings_automix_melos), checked = automix.melos,
+                    onChecked = automix::changeMelos, detail = stringResource(R.string.settings_automix_melos_detail))
             }
             // The session DJ steers the older planner only: the data-plan transitions decide on their own.
             if (!automix.segueActive) row {

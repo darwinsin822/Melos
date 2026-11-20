@@ -1,73 +1,73 @@
-# Orpheon
+# Melos
 
 *Formerly Myspoti. The community chose the new name; version 1.0.0 is the first under it. The icon is a placeholder until the real one is made.*
 
-*Coming from Myspoti? Update it to 2.4.1: it offers to install Orpheon, a new app next to it. Betas are on the [releases page](https://github.com/kota-zo/myspoti/releases).*
+*Coming from Myspoti? Update it to 2.4.1: it offers to install Melos, a new app next to it. Betas are on the [releases page](https://github.com/kota-zo/myspoti/releases).*
 
-[![Orpheon: 1.0.0](https://img.shields.io/badge/Orpheon-1.0.0-blue)](https://github.com/kota-zo/Orpheon/releases/tag/v1.0.0)
+[![Melos: 1.0.0](https://img.shields.io/badge/Melos-1.0.0-blue)](https://github.com/darwinsin822/Melos/releases/tag/v1.0.0)
 [![License: GPL-3.0](https://img.shields.io/github/license/kota-zo/myspoti)](LICENSE)
 [![Discord](https://img.shields.io/badge/Discord-join-5865F2?logo=discord&logoColor=white)](https://discord.gg/jXKnGVFnGS)
 
 **An extension-based music player for Android, Android TV and Wear OS.** The sound comes from your own files, Live Radio, or the extensions you choose to install; songs, albums and artists are described by public catalogs (Deezer, iTunes, MusicBrainz).
 
 > [!NOTE]
-> Orpheon hosts no content and ships no audio or download source. Extensions are made and published by third parties, and installing one is your choice: you are responsible for the sources you use, and for having the right to use them. Orpheon does not condone piracy, and is not affiliated with any streaming service or content provider.
+> Melos hosts no content and ships no audio or download source. Extensions are made and published by third parties, and installing one is your choice: you are responsible for the sources you use, and for having the right to use them. Melos does not condone piracy, and is not affiliated with any streaming service or content provider.
 
 <p align="center">
-  <img src="docs/screenshots/banner.jpg" alt="Orpheon in its two looks: the Immersive home and player, the Classic player and an artist page" width="100%">
+  <img src="docs/screenshots/banner.jpg" alt="Melos in its two looks: the Immersive home and player, the Classic player and an artist page" width="100%">
 </p>
 
 <p align="center">
-  <a href="https://github.com/kota-zo/Orpheon/releases/tag/v1.0.0"><b>⬇ Download Orpheon 1.0.0</b></a>
+  <a href="https://github.com/darwinsin822/Melos/releases/tag/v1.0.0"><b>⬇ Download Melos 1.0.0</b></a>
 </p>
 
 <p align="center"><sub>The Immersive look comes from <a href="https://github.com/kushagrasinghx/BitChord">BitChord</a>: see <a href="#bitchord">Credits</a>.</sub></p>
 
 <p align="center">
-  <a href="https://ko-fi.com/myspoti"><img src="https://storage.ko-fi.com/cdn/kofi6.png?v=6" alt="Support Orpheon on Ko-fi" height="56"></a>
+  <a href="https://ko-fi.com/myspoti"><img src="https://storage.ko-fi.com/cdn/kofi6.png?v=6" alt="Support Melos on Ko-fi" height="56"></a>
   <a href="https://github.com/sponsors/kota-zo"><img src="https://img.shields.io/badge/Sponsor_on_GitHub-%E2%9D%A4-ea4aaa?style=for-the-badge&logo=githubsponsors&logoColor=white" alt="Sponsor kota-zo on GitHub" height="56"></a>
 </p>
 
-## Why Orpheon
+## Why Melos
 
 ### 🧩 Built on extensions
-Orpheon is a player first. Lyrics, sound and downloads can come from extensions: small scripts, written by other people, that run in a sandbox and only do what they asked for when you installed them. You pick them, you order them, you turn them off. Orpheon has no source of its own; an extension's files come from where its author says, and Orpheon keeps them encrypted on your phone.
+Melos is a player first. Lyrics, sound and downloads can come from extensions: small scripts, written by other people, that run in a sandbox and only do what they asked for when you installed them. You pick them, you order them, you turn them off. Melos has no source of its own; an extension's files come from where its author says, and Melos keeps them encrypted on your phone.
 
 ### 🎧 Your music, your way
-Search, albums and artists from public catalogs, your files, Live Radio and Android Auto, in Orpheon's own Classic and Immersive looks, plus **word-by-word lyrics**, **song meanings from Genius** and AutoMix.
+Search, albums and artists from public catalogs, your files, Live Radio and Android Auto, in Melos's own Classic and Immersive looks, plus **word-by-word lyrics**, **song meanings from Genius** and AutoMix.
 
 ## What is it?
 
-Orpheon is a music player for Android that you install yourself. It needs no account: it plays the files on your phone, Live Radio, and what the extensions you install bring. Songs found in a search are described by public catalogs (Deezer, iTunes, MusicBrainz) and play from your audio-source extensions; a song that no source has is not played.
+Melos is a music player for Android that you install yourself. It needs no account: it plays the files on your phone, Live Radio, and what the extensions you install bring. Songs found in a search are described by public catalogs (Deezer, iTunes, MusicBrainz) and play from your audio-source extensions; a song that no source has is not played.
 
 ## Get started
 
-1. Download the APK from the [Orpheon 1.0.0 release](https://github.com/kota-zo/Orpheon/releases/tag/v1.0.0) and open it (Android 10 or later). Android asks once to allow installs from your browser or file manager.
+1. Download the APK from the [Melos 1.0.0 release](https://github.com/darwinsin822/Melos/releases/tag/v1.0.0) and open it (Android 10 or later). Android asks once to allow installs from your browser or file manager.
 2. Tap **Get started**, and choose a music account or none.
 3. Pick the sound quality, allow what you want (notifications, Bluetooth, local files…), and you are in.
 
 New versions are offered inside the app: one tap downloads and installs them.
 
 Each release carries four APKs:
-- `Orpheon-<version>-ARMv8.apk`: almost every phone from the last ten years (64-bit). When in doubt, take this one.
-- `Orpheon-<version>-ARMv7.apk`: older or entry-level 32-bit phones (an app such as CPU-Z or Device Info shows which one yours is; if ARMv8 refuses to install, take this one).
-- `Orpheon-<version>-universal.apk`: both in one, larger.
-- `Orpheon-<version>-TV.apk`: Android TV and Google TV (the same app; on a TV it opens its TV screens).
+- `Melos-<version>-ARMv8.apk`: almost every phone from the last ten years (64-bit). When in doubt, take this one.
+- `Melos-<version>-ARMv7.apk`: older or entry-level 32-bit phones (an app such as CPU-Z or Device Info shows which one yours is; if ARMv8 refuses to install, take this one).
+- `Melos-<version>-universal.apk`: both in one, larger.
+- `Melos-<version>-TV.apk`: Android TV and Google TV (the same app; on a TV it opens its TV screens).
 
-Betas are `Orpheon-Beta-<version>-...`. The in-app update picks the right one by itself.
+Betas are `Melos-Beta-<version>-...`. The in-app update picks the right one by itself.
 
-Orpheon is a new app next to Myspoti 2.4 and earlier (`app.myspoti`, `app.myspoti.stable`): Myspoti's update button opens this page instead of installing it, as Android cannot install one app over the other. Install Orpheon, then uninstall Myspoti when you no longer need it.
+Melos is a new app next to Myspoti 2.4 and earlier (`app.myspoti`, `app.myspoti.stable`): Myspoti's update button opens this page instead of installing it, as Android cannot install one app over the other. Install Melos, then uninstall Myspoti when you no longer need it.
 
 Obtainium (add `https://github.com/kota-zo/myspoti`; the stable app and the beta app are two apps):
-- **Stable** (`app.orpheon`): leave "Include prereleases" off and set the APK filter to `^Orpheon-[0-9].*-ARMv8\.apk$` (or `-ARMv7`, `-TV`).
-- **Beta** (`app.orpheon.beta`): turn "Include prereleases" on and set the APK filter to `^Orpheon-Beta-.*-ARMv8\.apk$` (or `-ARMv7`, `-TV`).
+- **Stable** (`app.melos`): leave "Include prereleases" off and set the APK filter to `^Melos-[0-9].*-ARMv8\.apk$` (or `-ARMv7`, `-TV`).
+- **Beta** (`app.melos.beta`): turn "Include prereleases" on and set the APK filter to `^Melos-Beta-.*-ARMv8\.apk$` (or `-ARMv7`, `-TV`).
 - Betas are named `<next version>-beta.<n>` (`1.0.1-beta.1`, then `1.0.1-beta.2`...), marked prerelease on GitHub, and always newer than the last stable.
 
 ## What you get
 
 **Listening**
 - Search, artist and album pages from public catalogs (Deezer, iTunes, MusicBrainz, in the order you choose in Settings).
-- Pick any song: shuffle (Orpheon's own plays every song once before any repeats), the queue (drag to reorder), repeat (all, the song for good, the song once), crossfade, AutoMix, sleep timer.
+- Pick any song: shuffle (Melos's own plays every song once before any repeats), the queue (drag to reorder), repeat (all, the song for good, the song once), crossfade, AutoMix, sleep timer.
 - A 10-band **equalizer** with presets, playback speed and skip silence; **Stats for nerds** shows the codec, sample rate, bit depth, bitrate and output of what plays.
 - Bluetooth with your headphones' name, lock screen, notification, widget and Android Auto.
 
@@ -77,7 +77,7 @@ Obtainium (add `https://github.com/kota-zo/myspoti`; the stable app and the beta
 
 **Offline**
 - With a download-source extension you installed: keep songs, albums and playlists on the phone, in the formats the extension offers (or re-encoded to small AAC on the phone).
-- Downloads are encrypted and stay in Orpheon. A downloaded list follows the list's changes.
+- Downloads are encrypted and stay in Melos. A downloaded list follows the list's changes.
 - Your local audio files too.
 
 **Extensions**
@@ -112,23 +112,23 @@ Two looks, switched in Settings, Display.
 
 ## Questions
 
-**Where does the music come from?** From your own files, Live Radio, or an extension you installed. Orpheon ships no source: an extension's sound or files come from where its author says, under that author's responsibility and yours.
+**Where does the music come from?** From your own files, Live Radio, or an extension you installed. Melos ships no source: an extension's sound or files come from where its author says, under that author's responsibility and yours.
 
 **What leaves my phone?** Searches and the pages they lead to are read from public catalogs (Deezer, iTunes, MusicBrainz). Lyrics are looked up on lyrics sites, song meanings on Genius, translations on Google Translate, and downloads on the hosts your download-source extension names (shown before you install it). Live Radio, once turned on, searches [Radio Browser](https://www.radio-browser.info) and loads each station's logo and stream from that station's own server. Nothing is sent to the developer.
 
 ## Not included
 
-- No DRM circumvention: Orpheon decrypts nothing for an extension.
+- No DRM circumvention: Melos decrypts nothing for an extension.
 - No audio or download source of its own, and no content hosted.
 - No ad blocking, muting or skipping.
 
 ## Disclaimer
 
-The developer is not liable for any misuse of Orpheon or of the extensions people install in it, and is not affiliated with any streaming service or content provider. Use only sources you have the right to use. If you can, support artists by subscribing to the services you listen on, or by buying their music.
+The developer is not liable for any misuse of Melos or of the extensions people install in it, and is not affiliated with any streaming service or content provider. Use only sources you have the right to use. If you can, support artists by subscribing to the services you listen on, or by buying their music.
 
 ## Support
 
-Orpheon is free and made in my spare time. If you enjoy it, you can support it on [Ko-fi](https://ko-fi.com/myspoti) or [GitHub Sponsors](https://github.com/sponsors/kota-zo), also from **About** in the app. Nothing is locked behind a donation.
+Melos is free and made in my spare time. If you enjoy it, you can support it on [Ko-fi](https://ko-fi.com/myspoti) or [GitHub Sponsors](https://github.com/sponsors/kota-zo), also from **About** in the app. Nothing is locked behind a donation.
 
 News, help and ideas: the [Discord server](https://discord.gg/jXKnGVFnGS). Bugs and requests: [GitHub issues](https://github.com/kota-zo/myspoti/issues).
 
@@ -158,7 +158,7 @@ Every push builds and tests on GitHub Actions. A `vX.Y.Z` tag publishes a stable
 
 ### BitChord
 
-Orpheon owes a lot to [BitChord](https://github.com/kushagrasinghx/BitChord) by kushagrasinghx and its contributors (GPL-3.0-or-later), in code:
+Melos owes a lot to [BitChord](https://github.com/kushagrasinghx/BitChord) by kushagrasinghx and its contributors (GPL-3.0-or-later), in code:
 - **The Immersive look** is ported from it: the player and its mesh backdrop, the swept word-by-word lyrics, the queue panel, the glass tab bar, the top bars, the sheets, the motion and the Home, Search, Library, artist, album, playlist, profile and podcast pages.
 - **The equalizer** of the songs the app plays itself: its filters and the way a change glides.
 
@@ -176,7 +176,7 @@ Full notices: [`THIRD_PARTY_NOTICES.md`](THIRD_PARTY_NOTICES.md).
 
 ## License
 
-GPL-3.0. If you reuse this code, you must credit Orpheon, keep the license notices and
+GPL-3.0. If you reuse this code, you must credit Melos, keep the license notices and
 publish your complete source under GPL-3.0. Closed-source or uncredited copies are
 violations and will be reported to the hosting platform (DMCA takedown). See also
 [`AGENTS.md`](AGENTS.md).

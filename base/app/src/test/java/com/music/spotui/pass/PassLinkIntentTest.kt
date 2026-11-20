@@ -31,19 +31,19 @@ class PassLinkIntentTest {
 
     @Test fun `the QR code's link opens the main activity, as the codes of before`() {
         assertEquals(listOf("app.myspoti.MainActivity"), opens(invite.toText()))
-        val old = invite.toText().replace("orpheon://pass?v=1&", "orpheon-pass:1?")
+        val old = invite.toText().replace("melos://pass?v=1&", "melos-pass:1?")
         assertEquals(listOf("app.myspoti.MainActivity"), opens(old))
     }
 
     @Test fun `another link of the scheme opens nothing`() {
-        assertTrue(opens("orpheon://settings?x=1").isEmpty())
+        assertTrue(opens("melos://settings?x=1").isEmpty())
         assertTrue(opens("https://example.com/pass").isEmpty())
     }
 
     @Test fun `only the pass's links are taken`() {
         assertTrue(PassLinks.isPassLink(invite.toText()))
-        assertTrue(PassLinks.isPassLink("orpheon://pass?broken"))
-        assertTrue(PassLinks.isPassLink("orpheon-pass:1?a=1"))
+        assertTrue(PassLinks.isPassLink("melos://pass?broken"))
+        assertTrue(PassLinks.isPassLink("melos-pass:1?a=1"))
         assertFalse(PassLinks.isPassLink("https://open.spotify.com/track/0000000000000000000000"))
         assertFalse(PassLinks.isPassLink("spotify:track:0000000000000000000000"))
     }

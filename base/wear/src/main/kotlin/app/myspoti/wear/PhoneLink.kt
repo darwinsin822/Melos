@@ -65,7 +65,7 @@ class PhoneLink(private val context: Context) {
         at(found.first, found.second)
     }
 
-    /** The phone's announce on this network (`Orpheon-<id>`): its address and port, or null within a few seconds. */
+    /** The phone's announce on this network (`Melos-<id>`): its address and port, or null within a few seconds. */
     private suspend fun find(id: String): Pair<String, Int>? {
         if (id.isBlank()) return null
         val nsd = context.getSystemService(NsdManager::class.java) ?: return null
@@ -73,7 +73,7 @@ class PhoneLink(private val context: Context) {
             suspendCancellableCoroutine { cont ->
                 val listener = object : NsdManager.DiscoveryListener {
                     override fun onServiceFound(info: NsdServiceInfo) {
-                        if (info.serviceName != "Orpheon-$id") return
+                        if (info.serviceName != "Melos-$id") return
                         @Suppress("DEPRECATION")
                         nsd.resolveService(info, object : NsdManager.ResolveListener {
                             override fun onServiceResolved(r: NsdServiceInfo) {
@@ -89,7 +89,7 @@ class PhoneLink(private val context: Context) {
                     override fun onStartDiscoveryFailed(type: String, code: Int) { if (cont.isActive) cont.resume(null) }
                     override fun onStopDiscoveryFailed(type: String, code: Int) {}
                 }
-                nsd.discoverServices("_orpheon._tcp", NsdManager.PROTOCOL_DNS_SD, listener)
+                nsd.discoverServices("_melos._tcp", NsdManager.PROTOCOL_DNS_SD, listener)
                 cont.invokeOnCancellation { runCatching { nsd.stopServiceDiscovery(listener) } }
             }
         }
@@ -134,11 +134,11 @@ class PhoneLink(private val context: Context) {
     }.getOrElse { askLan(EXTENSIONS, "") }.also { if (it.startsWith("error:")) throw IllegalStateException(it.removePrefix("error:").trim()) }
 
     companion object {
-        const val LINK_PATH = "/orpheon/session"
-        const val LIBRARY = "/orpheon/library"
-        const val TRACKS = "/orpheon/tracks"
-        const val EXTENSIONS = "/orpheon/extensions"
-        private const val TAG = "Orpheon"
+        const val LINK_PATH = "/melos/session"
+        const val LIBRARY = "/melos/library"
+        const val TRACKS = "/melos/tracks"
+        const val EXTENSIONS = "/melos/extensions"
+        private const val TAG = "Melos"
         private const val LINK = "link"
         private const val ASK_MS = 20_000L
         private const val FIND_MS = 5_000L

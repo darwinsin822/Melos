@@ -38,22 +38,22 @@ class UpdateCheckerTest {
     }
     @Test fun findsThisAppsApkForThisChannelAndAbi() {
         val r = org.json.JSONObject("""{"tag_name":"v2.5.0","assets":[
-            {"name":"Orpheon-2.5.0-TV.apk","browser_download_url":"https://x/tv.apk"},
-            {"name":"Orpheon-2.5.0-universal.apk","browser_download_url":"https://x/universal.apk"},
-            {"name":"Orpheon-2.5.0-ARMv7.apk","browser_download_url":"https://x/v7.apk"},
-            {"name":"Orpheon-2.5.0-ARMv8.apk","browser_download_url":"https://x/v8.apk"}]}""")
+            {"name":"Melos-2.5.0-TV.apk","browser_download_url":"https://x/tv.apk"},
+            {"name":"Melos-2.5.0-universal.apk","browser_download_url":"https://x/universal.apk"},
+            {"name":"Melos-2.5.0-ARMv7.apk","browser_download_url":"https://x/v7.apk"},
+            {"name":"Melos-2.5.0-ARMv8.apk","browser_download_url":"https://x/v8.apk"}]}""")
         // A 64-bit phone that also runs armeabi-v7a takes ARMv8, whatever the assets' order.
-        assertEquals("https://x/v8.apk", UpdateChecker.apkAsset(r, beta = false, abis = arm64, name = "Orpheon"))
-        assertEquals("https://x/v7.apk", UpdateChecker.apkAsset(r, beta = false, abis = listOf("armeabi-v7a", "armeabi"), name = "Orpheon"))
+        assertEquals("https://x/v8.apk", UpdateChecker.apkAsset(r, beta = false, abis = arm64, name = "Melos"))
+        assertEquals("https://x/v7.apk", UpdateChecker.apkAsset(r, beta = false, abis = listOf("armeabi-v7a", "armeabi"), name = "Melos"))
         // A stable release has no beta APK; an ABI the releases do not carry gets no link (the page opens).
-        assertEquals("", UpdateChecker.apkAsset(r, beta = true, abis = arm64, name = "Orpheon"))
-        assertEquals("", UpdateChecker.apkAsset(r, beta = false, abis = listOf("x86_64", "x86"), name = "Orpheon"))
-        assertEquals("", UpdateChecker.apkAsset(r, beta = false, abis = emptyList(), name = "Orpheon"))
-        assertEquals("", UpdateChecker.apkAsset(org.json.JSONObject("{}"), beta = false, abis = arm64, name = "Orpheon"))
+        assertEquals("", UpdateChecker.apkAsset(r, beta = true, abis = arm64, name = "Melos"))
+        assertEquals("", UpdateChecker.apkAsset(r, beta = false, abis = listOf("x86_64", "x86"), name = "Melos"))
+        assertEquals("", UpdateChecker.apkAsset(r, beta = false, abis = emptyList(), name = "Melos"))
+        assertEquals("", UpdateChecker.apkAsset(org.json.JSONObject("{}"), beta = false, abis = arm64, name = "Melos"))
         val b = org.json.JSONObject("""{"tag_name":"v2.5.0-beta.2","assets":[
-            {"name":"Orpheon-Beta-2.5.0-beta.2-ARMv8.apk","browser_download_url":"https://x/b8.apk"}]}""")
-        assertEquals("https://x/b8.apk", UpdateChecker.apkAsset(b, beta = true, abis = arm64, name = "Orpheon"))
-        assertEquals("", UpdateChecker.apkAsset(b, beta = false, abis = arm64, name = "Orpheon"))
+            {"name":"Melos-Beta-2.5.0-beta.2-ARMv8.apk","browser_download_url":"https://x/b8.apk"}]}""")
+        assertEquals("https://x/b8.apk", UpdateChecker.apkAsset(b, beta = true, abis = arm64, name = "Melos"))
+        assertEquals("", UpdateChecker.apkAsset(b, beta = false, abis = arm64, name = "Melos"))
     }
     @Test fun anotherAppsApkIsNeverTaken() {
         // Myspoti's own releases (another package, Android cannot install it over this app), new
@@ -62,7 +62,7 @@ class UpdateCheckerTest {
             {"name":"Myspoti-2.4.0-ARMv8.apk","browser_download_url":"https://x/m8.apk"},
             {"name":"myspoti-stable-2.4.0-arm64-v8a.apk","browser_download_url":"https://x/legacy.apk"},
             {"name":"myspoti-2.4.0.apk","browser_download_url":"https://x/single.apk"}]}""")
-        assertEquals("", UpdateChecker.apkAsset(myspoti, beta = false, abis = arm64, name = "Orpheon"))
+        assertEquals("", UpdateChecker.apkAsset(myspoti, beta = false, abis = arm64, name = "Melos"))
         // And Myspoti's own build still finds its own.
         assertEquals("https://x/m8.apk", UpdateChecker.apkAsset(myspoti, beta = false, abis = arm64, name = "Myspoti"))
     }
@@ -83,14 +83,14 @@ class UpdateCheckerTest {
         val list = listOf(
             rel("v2.4.0", false, "Myspoti-2.4.0-ARMv8.apk"),
             rel("v2.4.1-beta.1", true, "Myspoti-Beta-2.4.1-beta.1-ARMv8.apk"),
-            rel("v1.0.0-beta.2", true, "Orpheon-Beta-1.0.0-beta.2-ARMv8.apk"),
-            rel("v1.0.0-beta.1", true, "Orpheon-Beta-1.0.0-beta.1-ARMv8.apk"),
+            rel("v1.0.0-beta.2", true, "Melos-Beta-1.0.0-beta.2-ARMv8.apk"),
+            rel("v1.0.0-beta.1", true, "Melos-Beta-1.0.0-beta.1-ARMv8.apk"),
             rel("v1.0.1-beta.1", true),
         )
-        assertEquals("1.0.0-beta.2", UpdateChecker.newest(list, beta = true, abis = arm64, name = "Orpheon")?.version)
-        // No stable Orpheon yet: Myspoti's 2.4.0 is not one.
-        assertEquals(null, UpdateChecker.newest(list, beta = false, abis = arm64, name = "Orpheon"))
-        val stable = list + rel("v1.0.0", false, "Orpheon-1.0.0-ARMv8.apk")
-        assertEquals("1.0.0", UpdateChecker.newest(stable, beta = false, abis = arm64, name = "Orpheon")?.version)
+        assertEquals("1.0.0-beta.2", UpdateChecker.newest(list, beta = true, abis = arm64, name = "Melos")?.version)
+        // No stable Melos yet: Myspoti's 2.4.0 is not one.
+        assertEquals(null, UpdateChecker.newest(list, beta = false, abis = arm64, name = "Melos"))
+        val stable = list + rel("v1.0.0", false, "Melos-1.0.0-ARMv8.apk")
+        assertEquals("1.0.0", UpdateChecker.newest(stable, beta = false, abis = arm64, name = "Melos")?.version)
     }
 }

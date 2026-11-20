@@ -188,12 +188,12 @@ object AutoMix {
     fun changeSegue(value: Boolean) { segue = value; Graph.app.getSharedPreferences(PREFS, 0).edit().putBoolean("automix_segue", value).apply(); com.music.spotui.di.LocalPlayer.autoMixSettingsChanged() }
     val segueActive: Boolean get() = segue && style == 0
 
-    /** The Orpheon planner (on by default), else the compact one it replaces, kept as a way back. */
-    var orpheon by mutableStateOf(Graph.app.getSharedPreferences(PREFS, 0).getBoolean("automix_orpheon", true))
+    /** The Melos planner (on by default), else the compact one it replaces, kept as a way back. */
+    var melos by mutableStateOf(Graph.app.getSharedPreferences(PREFS, 0).getBoolean("automix_melos", true))
         private set
-    fun changeOrpheon(value: Boolean) { orpheon = value; Graph.app.getSharedPreferences(PREFS, 0).edit().putBoolean("automix_orpheon", value).apply(); com.music.spotui.di.LocalPlayer.autoMixSettingsChanged() }
+    fun changeMelos(value: Boolean) { melos = value; Graph.app.getSharedPreferences(PREFS, 0).edit().putBoolean("automix_melos", value).apply(); com.music.spotui.di.LocalPlayer.autoMixSettingsChanged() }
 
-    /** The [app.myspoti.automix.segue.MixIdea]s the Orpheon planner plays with, as their bits: each is one switch of the Mix Lab. */
+    /** The [app.myspoti.automix.segue.MixIdea]s the Melos planner plays with, as their bits: each is one switch of the Mix Lab. */
     var ideas by mutableStateOf(Graph.app.getSharedPreferences(PREFS, 0).getInt("automix_ideas",
         if (app.myspoti.engine.BuildConfig.APPLICATION_ID == "app.myspoti.automixlab") app.myspoti.automix.segue.MixIdea.DEFAULT else 0))
         private set
@@ -204,8 +204,8 @@ object AutoMix {
         com.music.spotui.di.LocalPlayer.autoMixSettingsChanged()
     }
 
-    /** The tempo gap the Orpheon planner may close when the listener asks for the narrowest range. */
-    private const val ORPHEON_NARROW_TEMPO = 0.06
+    /** The tempo gap the Melos planner may close when the listener asks for the narrowest range. */
+    private const val MELOS_NARROW_TEMPO = 0.06
 
     /** The policy's decision for two analysed songs. The listener's settings may only tighten its limits. */
     fun decide(a: TrackAnalysis, b: TrackAnalysis, earliestExit: Double, sameAlbum: Boolean, listener: Float,
@@ -213,14 +213,14 @@ object AutoMix {
         val s = settings()
         val d = app.myspoti.automix.segue.SeguePolicy.decide(app.myspoti.automix.segue.SegueRequest(a, b, (earliestExit * 1e6).toLong(),
             listenerRate = (listener * app.myspoti.automix.segue.SegueFormat.RATE_NOMINAL).toLong(),
-            // The Orpheon planner ramps both songs and keeps its own tempo limits (see OrpheonTuning): the
+            // The Melos planner ramps both songs and keeps its own tempo limits (see MelosTuning): the
             // listener's range, made for one song held at a fixed speed, only narrows it at its smallest.
-            maxRatePpm = if (orpheon && tempoRange > 0) null else ((if (orpheon) ORPHEON_NARROW_TEMPO else s.maxStretch) * 1e6).toLong(),
+            maxRatePpm = if (melos && tempoRange > 0) null else ((if (melos) MELOS_NARROW_TEMPO else s.maxStretch) * 1e6).toLong(),
             maxBars = s.maxBars, eq = djEq, harmonic = harmonic, sameAlbum = sameAlbum,
             durationBounds = configuredDurationBounds(), genreA = genreA, genreB = genreB,
             minBars = s.minBars, fadeSec = doubleArrayOf(6.0, 10.0, 14.0)[mixLength],
-            tuning = app.myspoti.automix.segue.SegueTuning(planner = if (orpheon) app.myspoti.automix.segue.SegueTuning.PLANNER_ORPHEON else app.myspoti.automix.segue.SegueTuning.PLANNER_COMPACT,
-                ideas = if (orpheon) ideas else 0)))
+            tuning = app.myspoti.automix.segue.SegueTuning(planner = if (melos) app.myspoti.automix.segue.SegueTuning.PLANNER_MELOS else app.myspoti.automix.segue.SegueTuning.PLANNER_COMPACT,
+                ideas = if (melos) ideas else 0)))
         val plan = d.plan ?: return d
         if (app.myspoti.automix.segue.SegueDeck.playable(plan)) return d
         return app.myspoti.automix.segue.SegueDecision(app.myspoti.automix.segue.SegueLevel.NORMAL, null,

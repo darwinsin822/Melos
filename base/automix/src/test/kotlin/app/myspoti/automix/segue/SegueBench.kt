@@ -49,12 +49,12 @@ object SegueBench {
             "measure" -> measure(dir, fold, limit ?: 100, args.firstOrNull { it.startsWith("only=") }?.removePrefix("only="))
             "audit-peaks" -> auditPeaks(dir, rest.drop(1).filter { it.contains(',') })
             "stability" -> stability(dir, fold, limit ?: 60)
-            "orpheon" -> OrpheonBench.run(dir, tuning)
-            "rawgrid" -> OrpheonBench.rawGrid(dir, File(rest.getOrNull(1) ?: error("rawgrid <dir> <out>")))
-            "songmaps" -> OrpheonBench.export(dir, File(rest.getOrNull(1) ?: error("songmaps <dir> <out>")))
+            "melos" -> MelosBench.run(dir, tuning)
+            "rawgrid" -> MelosBench.rawGrid(dir, File(rest.getOrNull(1) ?: error("rawgrid <dir> <out>")))
+            "songmaps" -> MelosBench.export(dir, File(rest.getOrNull(1) ?: error("songmaps <dir> <out>")))
             "render" -> render(dir, rest.drop(1).filter { it.contains(',') })
             "render-float" -> render(dir, rest.drop(1).filter { it.contains(',') }, rawFloat = true)
-            else -> println("segue <dir> split | matrix [fresh] | measure [limit=N] | audit-peaks a,b ... | stability [limit=N] | render[-float] a,b ... | orpheon (maps/, plans.jsonl) ; all take fold=")
+            else -> println("segue <dir> split | matrix [fresh] | measure [limit=N] | audit-peaks a,b ... | stability [limit=N] | render[-float] a,b ... | melos (maps/, plans.jsonl) ; all take fold=")
         }
     }
 
@@ -112,8 +112,8 @@ object SegueBench {
     }
 
     init {
-        // ORPHEON_TRACE=<file>: every locked place the Orpheon planner scored, with its costs.
-        System.getenv("ORPHEON_TRACE")?.let { path -> File(path).let { f -> f.writeText(""); OrpheonPolicy.trace = { line -> f.appendText(line + "\n") } } }
+        // MELOS_TRACE=<file>: every locked place the Melos planner scored, with its costs.
+        System.getenv("MELOS_TRACE")?.let { path -> File(path).let { f -> f.writeText(""); MelosPolicy.trace = { line -> f.appendText(line + "\n") } } }
     }
 
     private fun request(a: TrackAnalysis, b: TrackAnalysis, t: SegueTuning = tuning) = SegueRequest(a, b, tuning = t, durationBounds = bounds,
@@ -480,7 +480,7 @@ object SegueCorpus {
     /** One value changed; `compact.<name>` and `headroom.<name>` reach the nested values. */
     fun withValue(base: SegueTuning, field: String, value: Double): SegueTuning = when {
         field.startsWith("compact.") -> base.copy(compact = changed(base.compact, field.removePrefix("compact."), value))
-        field.startsWith("orpheon.") -> base.copy(orpheon = changed(base.orpheon, field.removePrefix("orpheon."), value))
+        field.startsWith("melos.") -> base.copy(melos = changed(base.melos, field.removePrefix("melos."), value))
         field.startsWith("headroom.") -> base.copy(headroom = changed(base.headroom, field.removePrefix("headroom."), value))
         else -> changed(base, field, value)
     }

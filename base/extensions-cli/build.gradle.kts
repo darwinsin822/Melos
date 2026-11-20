@@ -1,4 +1,4 @@
-// `myspoti-ext`: build, check and try Orpheon extensions on a computer.
+// `myspoti-ext`: build, check and try Melos extensions on a computer.
 //   ./gradlew :extensions-cli:run --args="run path/to/extension lyrics ..."
 plugins {
     alias(libs.plugins.kotlin.jvm)

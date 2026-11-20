@@ -15,7 +15,7 @@ val keystoreProperties = Properties().apply {
 
 // -PautomixLab: a test app with its own data, installed alongside every regular/dev build.
 val automixLab = findProperty("automixLab") != null
-// -Pclean: a debug build as its own app ("Orpheon Clean", id suffix .clean), next to every other one.
+// -Pclean: a debug build as its own app ("Melos Clean", id suffix .clean), next to every other one.
 val cleanApp = findProperty("clean") != null
 
 
@@ -28,7 +28,7 @@ val ABI_NAMES = mapOf("arm64-v8a" to "ARMv8", "armeabi-v7a" to "ARMv7")
  * so their update check, which installs only its own package, opens the release page for these
  * instead of trying an APK it cannot install over itself.
  */
-val APK_NAME = "Orpheon"
+val APK_NAME = "Melos"
 
 android {
     testOptions {
@@ -40,16 +40,16 @@ android {
     namespace = "app.myspoti.engine"
     compileSdk = 37
 
-    // Two channels that install side by side: betas ("2.0.0-beta.3") stay "app.orpheon.beta",
-    // signed with the first key, as "Orpheon Beta"; releases are "app.orpheon",
-    // signed with their own key, as "Orpheon". (Provisional ids: the rename from Myspoti.)
+    // Two channels that install side by side: betas ("2.0.0-beta.3") stay "app.melos.beta",
+    // signed with the first key, as "Melos Beta"; releases are "app.melos",
+    // signed with their own key, as "Melos". (Provisional ids: the rename from Myspoti.)
     // Local builds (no version given) are on the beta side, like the phone test builds.
     val version = (findProperty("appVersionName") as String?) ?: "1.0.0"
     // "-beta" as in UpdateChecker.isBeta, one predicate for the app id, the label and the log stripping.
     val beta = findProperty("appVersionName") == null || version.contains("-beta")
     defaultConfig {
-        applicationId = if (automixLab) "app.myspoti.automixlab" else if (beta) "app.orpheon.beta" else "app.orpheon"
-        manifestPlaceholders["appLabel"] = if (automixLab) "Myspoti Mix Lab" else if (beta) "Orpheon Beta" else "Orpheon"
+        applicationId = if (automixLab) "app.myspoti.automixlab" else if (beta) "app.melos.beta" else "app.melos"
+        manifestPlaceholders["appLabel"] = if (automixLab) "Myspoti Mix Lab" else if (beta) "Melos Beta" else "Melos"
         // The adb command line (com.music.spotui.cli): betas and debug builds only.
         manifestPlaceholders["cliEnabled"] = beta.toString()
         minSdk = 29
@@ -102,7 +102,7 @@ android {
             // Installs next to the release apps (own data, own sign-in).
             if (cleanApp) applicationIdSuffix = ".clean"
             else if (!automixLab) applicationIdSuffix = ".dev"
-            manifestPlaceholders["appLabel"] = if (cleanApp) "Orpheon Clean" else if (automixLab) "Myspoti Mix Lab" else "Orpheon dev"
+            manifestPlaceholders["appLabel"] = if (cleanApp) "Melos Clean" else if (automixLab) "Myspoti Mix Lab" else "Melos dev"
             manifestPlaceholders["cliEnabled"] = "true"
             buildConfigField("String", "UPDATE_REPO", "\"\"")
         }
@@ -114,7 +114,7 @@ android {
             // beta on the test phone without replacing the signed beta installed there.
             if (findProperty("overDev") != null && !automixLab) {
                 applicationIdSuffix = ".dev"
-                manifestPlaceholders["appLabel"] = "Orpheon dev"
+                manifestPlaceholders["appLabel"] = "Melos dev"
                 buildConfigField("String", "UPDATE_REPO", "\"\"")
             }
             // The Mix Lab stays drivable from the CLI in its optimised build, as in its debug one.
@@ -240,10 +240,10 @@ dependencies {
 }
 /**
  * `./gradlew :app:collectApks` after assembleRelease: the APKs under clear names in
- * build/release-apks/: Orpheon-2.4.0-ARMv8.apk (64-bit phones, almost all of them),
- * Orpheon-2.4.0-ARMv7.apk (32-bit), Orpheon-2.4.0-universal.apk (both) and Orpheon-2.4.0-TV.apk
+ * build/release-apks/: Melos-2.4.0-ARMv8.apk (64-bit phones, almost all of them),
+ * Melos-2.4.0-ARMv7.apk (32-bit), Melos-2.4.0-universal.apk (both) and Melos-2.4.0-TV.apk
  * (Android TV: the universal APK, since many TVs run 32-bit apps on a 64-bit chip). Betas are
- * Orpheon-Beta-..., the optimised dev builds Orpheon-dev-...
+ * Melos-Beta-..., the optimised dev builds Melos-dev-...
  */
 tasks.register("collectApks") {
     mustRunAfter("assembleRelease")

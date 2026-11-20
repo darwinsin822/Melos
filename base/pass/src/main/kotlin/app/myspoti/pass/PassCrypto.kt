@@ -21,7 +21,7 @@ import javax.crypto.spec.SecretKeySpec
  */
 object PassCrypto {
     private val random = SecureRandom()
-    private const val INFO = "orpheon-pass-v1"
+    private const val INFO = "melos-pass-v1"
 
     fun keyPair(): KeyPair = KeyPairGenerator.getInstance("EC").apply { initialize(ECGenParameterSpec("secp256r1"), random) }.generateKeyPair()
 

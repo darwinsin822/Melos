@@ -32,6 +32,6 @@ tasks.register<JavaExec>("bench") {
     (findProperty("minBars") as String?)?.let { environment("ORPHEON_MIN_BARS", it) }
     (findProperty("fadeSec") as String?)?.let { environment("ORPHEON_FADE_SEC", it) }
     (findProperty("genres") as String?)?.let { environment("ORPHEON_GENRES", it) }
-    (findProperty("trace") as String?)?.let { environment("ORPHEON_TRACE", it) }
+    (findProperty("trace") as String?)?.let { environment("MELOS_TRACE", it) }
     (findProperty("only") as String?)?.let { environment("ORPHEON_ONLY", it) }
 }

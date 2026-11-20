@@ -10,8 +10,8 @@ import kotlin.math.min
 import kotlin.math.pow
 import kotlin.math.roundToLong
 
-/** A request as the Orpheon planner reads it: nothing here depends on one analyser. */
-class OrpheonRequest(
+/** A request as the Melos planner reads it: nothing here depends on one analyser. */
+class MelosRequest(
     val earliestExitUs: Long = 0,
     val listenerRate: Long = SegueFormat.RATE_NOMINAL,
     val maxRatePpm: Long? = null,
@@ -31,16 +31,16 @@ class OrpheonRequest(
 )
 
 /** The decision, with what the bench and the tests look at. */
-class OrpheonOutcome(val decision: SegueDecision, val family: OrpheonFamily?, val style: OrpheonStyle?, val survivors: Int)
+class MelosOutcome(val decision: SegueDecision, val family: MelosFamily?, val style: MelosStyle?, val survivors: Int)
 
 /**
- * The Orpheon planner: pure Kotlin, reading only [SongMap]s. Each family is tried in turn, best
+ * The Melos planner: pure Kotlin, reading only [SongMap]s. Each family is tried in turn, best
  * first (beat-locked, smooth blend, silence removal, the plain fade); inside the first family that
  * has survivors, one candidate is drawn with a probability proportional to its score by a generator
  * seeded from the pair, so the same pair gets the same transition.
  */
-internal object OrpheonPolicy {
-    val ORIGIN = SeguePlan.Origin("myspoti-orpheon-1", "uncalibrated")
+internal object MelosPolicy {
+    val ORIGIN = SeguePlan.Origin("myspoti-melos-1", "uncalibrated")
 
     private val RATIOS = doubleArrayOf(1.0, 0.5, 2.0)
 
@@ -52,11 +52,11 @@ internal object OrpheonPolicy {
 
     fun decide(r: SegueRequest): SegueDecision = plan(
         SongMaps.from(r.a, r.tuning, r.genreA, CATALOGUE_GENRE_CONFIDENCE),
-        SongMaps.from(r.b, r.tuning, r.genreB, CATALOGUE_GENRE_CONFIDENCE), OrpheonRequest(
+        SongMaps.from(r.b, r.tuning, r.genreB, CATALOGUE_GENRE_CONFIDENCE), MelosRequest(
         r.earliestExitUs, r.listenerRate, r.maxRatePpm, r.maxBars, r.minBars, r.fadeSec, r.eq, r.harmonic, r.sameAlbum, r.tuning, r.durationBounds)).decision
 
     /** [only] keeps a single style of the catalogue: for listening to one style, and for the tests. */
-    fun plan(a: SongMap, b: SongMap, r: OrpheonRequest, only: String? = null): OrpheonOutcome = Run(a, b, r, only).decide()
+    fun plan(a: SongMap, b: SongMap, r: MelosRequest, only: String? = null): MelosOutcome = Run(a, b, r, only).decide()
 
     /** FNV-1a, 64 bits: the same pair gives the same seed on every platform. */
     internal fun seed(a: String, b: String): Long {
@@ -80,7 +80,7 @@ internal object OrpheonPolicy {
     private fun us(sec: Double): Long = (sec * 1e6).roundToLong()
 
     private class Candidate(
-        val style: OrpheonStyle,
+        val style: MelosStyle,
         val outSec: Double,
         val inSec: Double,
         /** Seconds of each song the window covers. */
@@ -93,12 +93,12 @@ internal object OrpheonPolicy {
         val share: Double = style.weight,
     )
 
-    private class Run(val a: SongMap, val b: SongMap, val r: OrpheonRequest, val only: String?) {
+    private class Run(val a: SongMap, val b: SongMap, val r: MelosRequest, val only: String?) {
         val all = r.tuning
-        val t = all.orpheon
+        val t = all.melos
         val bounds = r.durationBounds.forPlaybackRate(r.listenerRate.toDouble() / SegueFormat.RATE_NOMINAL)
         val ideas = MixIdea.of(all.ideas)
-        val lanes = OrpheonLanes(all, ideas)
+        val lanes = MelosLanes(all, ideas)
         val attempts = ArrayList<SegueAttempt>()
         val draws = Draws(seed(a.audioKey, b.audioKey))
         val earliestAsked = r.earliestExitUs / 1e6
@@ -113,35 +113,35 @@ internal object OrpheonPolicy {
         val genre = pairGenre()
         val facts = SegueSideFacts(a.audioKey, a.gridKey, us(a.durationSec)) to SegueSideFacts(b.audioKey, b.gridKey, us(b.durationSec))
 
-        fun decide(): OrpheonOutcome {
+        fun decide(): MelosOutcome {
             if (r.sameAlbum && us(duration - musicEndA) <= all.gaplessMaxSilenceUs && us(musicStartB) <= all.gaplessMaxSilenceUs)
-                return OrpheonOutcome(SegueDecision(SegueLevel.NORMAL, null, listOf(SegueAttempt(SegueLevel.LOCKED_SHORT, SegueCause.ALBUM_CONTINUITY))), null, null, 0)
-            for (family in OrpheonFamily.values()) {
+                return MelosOutcome(SegueDecision(SegueLevel.NORMAL, null, listOf(SegueAttempt(SegueLevel.LOCKED_SHORT, SegueCause.ALBUM_CONTINUITY))), null, null, 0)
+            for (family in MelosFamily.values()) {
                 val survivors = when (family) {
-                    OrpheonFamily.LOCKED -> locked()
-                    OrpheonFamily.SMOOTH -> smooth()
-                    OrpheonFamily.SILENCE -> silence()
-                    OrpheonFamily.FALLBACK -> fallback()
+                    MelosFamily.LOCKED -> locked()
+                    MelosFamily.SMOOTH -> smooth()
+                    MelosFamily.SILENCE -> silence()
+                    MelosFamily.FALLBACK -> fallback()
                 }.filter { only == null || it.style.id == only }
                 pick(family, survivors)?.let { return it }
             }
-            return OrpheonOutcome(SegueDecision(SegueLevel.NORMAL, null, attempts.toList()), null, null, 0)
+            return MelosOutcome(SegueDecision(SegueLevel.NORMAL, null, attempts.toList()), null, null, 0)
         }
 
-        private fun level(family: OrpheonFamily, bars: Int) = when {
-            family != OrpheonFamily.LOCKED -> SegueLevel.SIMPLE_FADE
+        private fun level(family: MelosFamily, bars: Int) = when {
+            family != MelosFamily.LOCKED -> SegueLevel.SIMPLE_FADE
             bars >= 16 -> SegueLevel.LOCKED_LONG
             bars <= 2 -> SegueLevel.LOCKED_BEAT
             else -> SegueLevel.LOCKED_SHORT
         }
 
-        private fun pick(family: OrpheonFamily, survivors: List<Candidate>): OrpheonOutcome? {
+        private fun pick(family: MelosFamily, survivors: List<Candidate>): MelosOutcome? {
             var left = survivors.sortedWith(compareBy<Candidate>({ it.outSec }, { it.inSec }, { it.bars }, { it.style.id }))
             while (left.isNotEmpty()) {
                 val chosen = draw(left)
                 val plan = build(family, chosen)
                 val problems = SegueValidator.against(plan, facts.first, facts.second)
-                if (problems.isEmpty()) return OrpheonOutcome(
+                if (problems.isEmpty()) return MelosOutcome(
                     SegueDecision(level(family, chosen.bars), plan, attempts.toList(), chosen.score, style = "${family.wire}/${chosen.style.id}" + ideas.joinToString("") { "+${it.wire}" }),
                     family, chosen.style, survivors.size)
                 attempts += SegueAttempt(level(family, chosen.bars), SegueCause.INVALID_PLAN, problems.joinToString(","))
@@ -174,8 +174,8 @@ internal object OrpheonPolicy {
             return 1 / ((c0 + c1) / 2 * rampEnd + c1 * (1 - rampEnd))
         }
 
-        private fun build(family: OrpheonFamily, c: Candidate): SeguePlan {
-            val locked = family == OrpheonFamily.LOCKED
+        private fun build(family: MelosFamily, c: Candidate): SeguePlan {
+            val locked = family == MelosFamily.LOCKED
             val lengthSec = if (locked) lengthOf(c.spanA, c.spanB, c.style.rampEnd) else c.spanA
             val lengthUs = us(lengthSec)
             val nominal = SegueFormat.RATE_NOMINAL
@@ -246,7 +246,7 @@ internal object OrpheonPolicy {
             return if (gaps.isEmpty()) 0.0 else gaps[gaps.size / 2]
         }
 
-        /** Bars to a phrase of the incoming song: four, or eight when its bars are short, whichever lasts nearer [OrpheonTuning.phraseSec]. */
+        /** Bars to a phrase of the incoming song: four, or eight when its bars are short, whichever lasts nearer [MelosTuning.phraseSec]. */
         private fun phraseOf(bar: Double) = if (bar > 0 && abs(ln(8 * bar / t.phraseSec)) < abs(ln(4 * bar / t.phraseSec))) 8 else 4
         private val phraseBars = phraseOf(barB)
 
@@ -300,7 +300,7 @@ internal object OrpheonPolicy {
             val exitsCache = HashMap<Int, List<Int>>()
             val stableA = HashMap<Long, Boolean>()
             val stableB = HashMap<Long, Boolean>()
-            for (style in OrpheonStyles.of(OrpheonFamily.LOCKED, genre)) {
+            for (style in MelosStyles.of(MelosFamily.LOCKED, genre)) {
                 val weight = style.weight * (if (genre in style.genres) 1.0 else t.genericWeight) * energyFavour(style, first)
                 for (bars in style.bars) {
                     if (bars > (r.maxBars ?: Int.MAX_VALUE)) continue
@@ -344,7 +344,7 @@ internal object OrpheonPolicy {
          * Style by energy: a quiet opening is blended into, so the blends are drawn more often and the short
          * arrivals less; an opening as loud as the song after a loud ending is arrived on, the other way round.
          */
-        private fun energyFavour(style: OrpheonStyle, first: Int): Double {
+        private fun energyFavour(style: MelosStyle, first: Int): Double {
             if (MixIdea.ENERGY_STYLE !in ideas) return 1.0
             val blend = style.sound == StyleSound.FILTERED || style.sound == StyleSound.REVERB_OUT
             val d = b.downbeatsSec
@@ -390,7 +390,7 @@ internal object OrpheonPolicy {
 
         /**
          * The bars of the outgoing song a window may start on: from where it may begin, on the song's
-         * half phrases counted from its first bar ([OrpheonTuning.exitOnPhrase]), or on every bar.
+         * half phrases counted from its first bar ([MelosTuning.exitOnPhrase]), or on every bar.
          */
         private fun exits(barsA: Int): List<Int> {
             val d = a.downbeatsSec
@@ -408,7 +408,7 @@ internal object OrpheonPolicy {
             return if (first + barsB < d.size) first..last else IntRange.EMPTY
         }
 
-        private fun score(style: OrpheonStyle, i: Int, barsA: Int, j: Int, barsB: Int, first: Int, spanA: Double, spanB: Double, lengthSec: Double, tempoShare: Double): Double {
+        private fun score(style: MelosStyle, i: Int, barsA: Int, j: Int, barsB: Int, first: Int, spanA: Double, spanB: Double, lengthSec: Double, tempoShare: Double): Double {
             val outSec = a.downbeatsSec[i]; val outEnd = a.downbeatsSec[i + barsA]
             val inSec = b.downbeatsSec[j]; val inEnd = b.downbeatsSec[j + barsB]
             val tempo = t.costTempo * tempoShare
@@ -513,7 +513,7 @@ internal object OrpheonPolicy {
             val entries = listOf(b.downbeatsSec.firstOrNull { it >= musicStartB - 0.1 } ?: musicStartB) +
                 b.sections.filter { it > musicStartB && it <= t.entryUsualSec }
             val out = ArrayList<Candidate>()
-            for (style in OrpheonStyles.of(OrpheonFamily.SMOOTH, genre)) for (place in places) for (entry in entries) {
+            for (style in MelosStyles.of(MelosFamily.SMOOTH, genre)) for (place in places) for (entry in entries) {
                 if (entry + length > b.durationSec) continue
                 val weight = style.weight * if (genre in style.genres) 1.0 else t.genericWeight
                 val score = (1 - (if (onSection.isEmpty()) t.costOffSection else 0.0) - t.costLateEntry * entry / t.entryLastSec) * weight
@@ -532,7 +532,7 @@ internal object OrpheonPolicy {
             val length = bounded(wanted)?.takeIf { it in t.silenceWindowMinSec..t.silenceWindowMaxSec } ?: return refuse(SegueLevel.SIMPLE_FADE, SegueCause.LENGTH_NOT_ALLOWED, "silence")
             val place = onBeat(duration - length, 0.0)
             if (place < earliest || place < 0 || duration - place > b.durationSec) return refuse(SegueLevel.SIMPLE_FADE, SegueCause.GUARDS, "silence place")
-            val style = OrpheonStyles.of(OrpheonFamily.SILENCE, genre).first()
+            val style = MelosStyles.of(MelosFamily.SILENCE, genre).first()
             return listOf(Candidate(style, place, 0.0, duration - place, duration - place, 0, 0, 1.0))
         }
 
@@ -557,7 +557,7 @@ internal object OrpheonPolicy {
          * under the incoming song's start instead of before it. The safety margin gives way before the transition does.
          */
         private fun fallback(): List<Candidate> {
-            val style = OrpheonStyles.of(OrpheonFamily.FALLBACK, genre).first()
+            val style = MelosStyles.of(MelosFamily.FALLBACK, genre).first()
             val entry = max(0.0, musicStartB - t.fallbackLeadSec)
             fun place(from: Double): Candidate? {
                 val wanted = bounded(r.fadeSec ?: t.fallbackSec) ?: return null

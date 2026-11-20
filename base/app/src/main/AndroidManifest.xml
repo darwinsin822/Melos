@@ -37,7 +37,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:banner="@drawable/tv_banner"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Orpheon"
+        android:theme="@style/Theme.Melos"
         android:usesCleartextTraffic="false">
         <!-- Samsung DeX: the app keeps running (and playing) when the window moves to or from DeX. -->
         <meta-data android:name="com.samsung.android.keepalive.density" android:value="true" />
@@ -96,7 +96,7 @@
             android:supportsPictureInPicture="true"
             android:configChanges="orientation|screenSize|smallestScreenSize|screenLayout|keyboardHidden|keyboard|navigation|density"
             android:windowSoftInputMode="adjustResize"
-            android:theme="@style/Theme.Orpheon">
+            android:theme="@style/Theme.Melos">
             <!-- Desktop windows (Samsung DeX, freeform): opens in a landscape window, resizable. -->
             <layout
                 android:defaultWidth="1100dp"
@@ -121,16 +121,16 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data
-                    android:scheme="orpheon"
+                    android:scheme="melos"
                     android:host="pass" />
             </intent-filter>
-            <!-- The pass codes of before (orpheon-pass:1?…, the desktop app's until it shows the link
+            <!-- The pass codes of before (melos-pass:1?…, the desktop app's until it shows the link
                  above): opened the same way where a scanner offers it. -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="orpheon-pass" />
+                <data android:scheme="melos-pass" />
             </intent-filter>
         </activity>
 
@@ -234,12 +234,12 @@
         <service android:name="com.music.spotui.wear.WearLinkService" android:exported="true">
             <intent-filter>
                 <action android:name="com.google.android.gms.wearable.REQUEST_RECEIVED" />
-                <data android:scheme="wear" android:host="*" android:pathPrefix="/orpheon" />
+                <data android:scheme="wear" android:host="*" android:pathPrefix="/melos" />
             </intent-filter>
             <!-- The extensions, too large for a message, go to the watch through a channel. -->
             <intent-filter>
                 <action android:name="com.google.android.gms.wearable.CHANNEL_EVENT" />
-                <data android:scheme="wear" android:host="*" android:pathPrefix="/orpheon" />
+                <data android:scheme="wear" android:host="*" android:pathPrefix="/melos" />
             </intent-filter>
         </service>
     </application>

@@ -25,8 +25,8 @@ def key(tag):
     return (int(m.group(1)), int(m.group(2)), int(m.group(3)), 1 if n is None else 0, int(n or 0))
 
 
-# Orpheon started over at 1.0.0 in the repository where Myspoti's tags (up to 2.4.x) stay: an Orpheon
-# 1.x tag is compared with Orpheon's own only. After 1.x Orpheon goes on at 3.0.0, above them.
+# Melos started over at 1.0.0 in the repository where Myspoti's tags (up to 2.4.x) stay: an Melos
+# 1.x tag is compared with Melos's own only. After 1.x Melos goes on at 3.0.0, above them.
 MYSPOTI_MAJOR = 2
 
 

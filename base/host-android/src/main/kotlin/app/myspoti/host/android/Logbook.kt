@@ -184,7 +184,7 @@ object Logbook {
         }
         // Masked and cut down (DiagnosticDigest): small enough to paste, nothing that opens an account.
         return buildString {
-            appendLine("Orpheon diagnostic report")
+            appendLine("Melos diagnostic report")
             header.forEach { (k, v) -> appendLine("${k.padEnd(12)}: ${DiagnosticDigest.mask(v)}") }
             appendLine()
             appendLine("--- power ---")

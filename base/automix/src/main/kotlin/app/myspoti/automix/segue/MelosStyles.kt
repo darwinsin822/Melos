@@ -12,7 +12,7 @@ import kotlin.math.sin
 import kotlin.math.sqrt
 
 /** The kinds of transition, best first: a lower one is only used when no candidate of a better one survives. */
-enum class OrpheonFamily(val wire: String) { LOCKED("locked"), SMOOTH("smooth"), SILENCE("silence"), FALLBACK("fallback") }
+enum class MelosFamily(val wire: String) { LOCKED("locked"), SMOOTH("smooth"), SILENCE("silence"), FALLBACK("fallback") }
 
 /** What a style does to the sound. Each is lanes and gestures in the plan: the deck knows nothing of them. */
 enum class StyleSound { GAPLESS, FILTERED, DELAY_OUT, LOOP_OUT, REVERB_OUT, PLAIN_FADE, SILENCE_JOIN }
@@ -43,9 +43,9 @@ enum class Arrival {
     }
 }
 
-data class OrpheonStyle(
+data class MelosStyle(
     val id: String,
-    val family: OrpheonFamily,
+    val family: MelosFamily,
     val sound: StyleSound,
     val genres: Set<GenreFamily>,
     /** Bar counts it plays over; a family without a grid has none. */
@@ -78,7 +78,7 @@ data class OrpheonStyle(
  * songs of that family; any other pair gets the general blends. Weights are each style's share of the
  * pairs it can play, set from how often each kind of transition is heard on the reference recordings.
  */
-object OrpheonStyles {
+object MelosStyles {
     private val ALL = GenreFamily.values().toSet()
     private val HIPHOP = setOf(GenreFamily.HIPHOP)
     private val DANCE = setOf(GenreFamily.DANCE)
@@ -90,15 +90,15 @@ object OrpheonStyles {
     private const val LONG_SEC = 29.0
 
     private fun short(id: String, sound: StyleSound, genres: Set<GenreFamily>, weight: Double, arrive: Arrival, rampEnd: Double = 0.75, loops: List<LoopStep> = emptyList()) =
-        OrpheonStyle(id, OrpheonFamily.LOCKED, sound, genres, setOf(2, 4), 5.4, 10.5, rampEnd, weight = weight, loops = loops, targetSec = SHORT_SEC, arrive = arrive)
+        MelosStyle(id, MelosFamily.LOCKED, sound, genres, setOf(2, 4), 5.4, 10.5, rampEnd, weight = weight, loops = loops, targetSec = SHORT_SEC, arrive = arrive)
 
     private fun mid(id: String, genres: Set<GenreFamily>, weight: Double) =
-        OrpheonStyle(id, OrpheonFamily.LOCKED, StyleSound.FILTERED, genres, setOf(4, 8), 10.5, 21.0, longBlend = true, weight = weight, targetSec = MID_SEC, arrive = Arrival.START)
+        MelosStyle(id, MelosFamily.LOCKED, StyleSound.FILTERED, genres, setOf(4, 8), 10.5, 21.0, longBlend = true, weight = weight, targetSec = MID_SEC, arrive = Arrival.START)
 
     private fun long(id: String, genres: Set<GenreFamily>, weight: Double) =
-        OrpheonStyle(id, OrpheonFamily.LOCKED, StyleSound.FILTERED, genres, setOf(8, 16), 21.0, 40.0, longBlend = true, weight = weight, targetSec = LONG_SEC, arrive = Arrival.QUARTER)
+        MelosStyle(id, MelosFamily.LOCKED, StyleSound.FILTERED, genres, setOf(8, 16), 21.0, 40.0, longBlend = true, weight = weight, targetSec = LONG_SEC, arrive = Arrival.QUARTER)
 
-    val CATALOGUE: List<OrpheonStyle> = listOf(
+    val CATALOGUE: List<MelosStyle> = listOf(
         short("hiphop-delay", StyleSound.DELAY_OUT, HIPHOP, 0.27, Arrival.BAR_BEFORE_END),
         short("hiphop-loop", StyleSound.LOOP_OUT, HIPHOP, 0.43, Arrival.END, rampEnd = 1.0, loops = listOf(LoopStep(0.5, 1.0))),
         mid("hiphop-filter", HIPHOP, 0.25),
@@ -107,7 +107,7 @@ object OrpheonStyles {
             loops = listOf(LoopStep(0.5, 1.0), LoopStep(0.75, 0.5), LoopStep(0.875, 0.25))),
         mid("dance-filter", DANCE, 0.6),
         long("dance-long", DANCE, 0.2),
-        OrpheonStyle("dance-join", OrpheonFamily.LOCKED, StyleSound.GAPLESS, DANCE, setOf(2), 2.0, 6.0, rampEnd = 0.5, weight = 0.05, targetSec = 4.0),
+        MelosStyle("dance-join", MelosFamily.LOCKED, StyleSound.GAPLESS, DANCE, setOf(2), 2.0, 6.0, rampEnd = 0.5, weight = 0.05, targetSec = 4.0),
         short("pop-delay", StyleSound.DELAY_OUT, POP, 0.3, Arrival.BAR_BEFORE_END),
         short("pop-reverb", StyleSound.REVERB_OUT, POP, 0.3, Arrival.END),
         mid("pop-filter", POP, 0.3),
@@ -115,16 +115,16 @@ object OrpheonStyles {
         short("blend-short", StyleSound.FILTERED, OTHER, 0.03, Arrival.END, rampEnd = 0.5),
         mid("blend", OTHER, 0.65),
         long("blend-long", OTHER, 0.32),
-        OrpheonStyle("smooth-reverb", OrpheonFamily.SMOOTH, StyleSound.REVERB_OUT, POP + OTHER),
-        OrpheonStyle("smooth-fade", OrpheonFamily.SMOOTH, StyleSound.PLAIN_FADE, ALL, weight = 0.8),
-        OrpheonStyle("silence-join", OrpheonFamily.SILENCE, StyleSound.SILENCE_JOIN, ALL),
-        OrpheonStyle("fade", OrpheonFamily.FALLBACK, StyleSound.PLAIN_FADE, ALL),
+        MelosStyle("smooth-reverb", MelosFamily.SMOOTH, StyleSound.REVERB_OUT, POP + OTHER),
+        MelosStyle("smooth-fade", MelosFamily.SMOOTH, StyleSound.PLAIN_FADE, ALL, weight = 0.8),
+        MelosStyle("silence-join", MelosFamily.SILENCE, StyleSound.SILENCE_JOIN, ALL),
+        MelosStyle("fade", MelosFamily.FALLBACK, StyleSound.PLAIN_FADE, ALL),
     )
 
-    fun byId(id: String): OrpheonStyle? = CATALOGUE.firstOrNull { it.id == id }
+    fun byId(id: String): MelosStyle? = CATALOGUE.firstOrNull { it.id == id }
 
     /** Those of [family] a pair of [genre] may use: its own when it has some, the general ones otherwise. */
-    fun of(family: OrpheonFamily, genre: GenreFamily): List<OrpheonStyle> {
+    fun of(family: MelosFamily, genre: GenreFamily): List<MelosStyle> {
         val own = CATALOGUE.filter { it.family == family && genre in it.genres }
         return own.ifEmpty { CATALOGUE.filter { it.family == family && GenreFamily.OTHER in it.genres } }
     }
@@ -145,8 +145,8 @@ internal class StylePlace(
 )
 
 /** A style as the deck plays it, on the window's 0..1. */
-internal class OrpheonLanes(private val tuning: SegueTuning, private val ideas: Set<MixIdea> = MixIdea.of(tuning.ideas)) {
-    private val n = tuning.orpheon
+internal class MelosLanes(private val tuning: SegueTuning, private val ideas: Set<MixIdea> = MixIdea.of(tuning.ideas)) {
+    private val n = tuning.melos
     private val base = CompactLanes(tuning)
     private val out = LaneSide.OUTGOING
     private val inc = LaneSide.INCOMING
@@ -157,7 +157,7 @@ internal class OrpheonLanes(private val tuning: SegueTuning, private val ideas: 
 
     private fun k(x: Double, value: Double?, form: KnotForm = KnotForm.Ramp) = base.knot(x, value, form)
 
-    fun shape(style: OrpheonStyle, place: StylePlace, eq: Boolean): Shape {
+    fun shape(style: MelosStyle, place: StylePlace, eq: Boolean): Shape {
         val lengthSec = place.lengthSec
         // Without the filters a hand-over made of them would be two whole songs: the plain fade instead.
         val plain = !eq && style.sound != StyleSound.SILENCE_JOIN && style.sound != StyleSound.GAPLESS
@@ -249,7 +249,7 @@ internal class OrpheonLanes(private val tuning: SegueTuning, private val ideas: 
      * round its last beat from the middle on while its low-pass closes. On the window's last beat the
      * incoming song opens fully, so that it stands alone on its phrase.
      */
-    private fun loopOut(style: OrpheonStyle, place: StylePlace): Shape {
+    private fun loopOut(style: MelosStyle, place: StylePlace): Shape {
         val beat = beat(place)
         val first = style.loops.first().at
         val near = (1 - beat).coerceIn(0.6, 0.98)
@@ -269,8 +269,8 @@ internal class OrpheonLanes(private val tuning: SegueTuning, private val ideas: 
     }
 
     /** The outgoing song dissolves into a reverb tail: the send rises while the dry level falls, the incoming song rising against it. */
-    private fun reverbOut(style: OrpheonStyle, lengthSec: Double): List<SeguePlan.Lane> {
-        val from = if (style.family == OrpheonFamily.SMOOTH) 0.0 else n.roomStart
+    private fun reverbOut(style: MelosStyle, lengthSec: Double): List<SeguePlan.Lane> {
+        val from = if (style.family == MelosFamily.SMOOTH) 0.0 else n.roomStart
         val rise = from + min(n.roomRiseSec / lengthSec, (1 - from) * 0.6)
         val end = 1 - share(n.edgeCutSec, lengthSec)
         val xs = base.grid(from, 1.0)
@@ -284,7 +284,7 @@ internal class OrpheonLanes(private val tuning: SegueTuning, private val ideas: 
 
     // ── Ideas: lanes added to a style's own, never replacing one it wrote ──
 
-    private fun withIdeas(style: OrpheonStyle, place: StylePlace, shape: Shape): Shape {
+    private fun withIdeas(style: MelosStyle, place: StylePlace, shape: Shape): Shape {
         if (ideas.isEmpty()) return shape
         val lanes = shape.lanes.toMutableList()
         var echoUs = shape.echoUs
@@ -312,15 +312,15 @@ internal class OrpheonLanes(private val tuning: SegueTuning, private val ideas: 
     }
 
     /** Where the low end changes hands in a style, null when its own filters already keep the two apart. */
-    private fun handover(style: OrpheonStyle): Double? = when (style.sound) {
+    private fun handover(style: MelosStyle): Double? = when (style.sound) {
         StyleSound.FILTERED -> if (style.arrive == Arrival.QUARTER) 0.75 else 1.0
-        StyleSound.REVERB_OUT -> if (style.family == OrpheonFamily.SMOOTH) 0.5 else n.roomStart + (1 - n.roomStart) / 2
+        StyleSound.REVERB_OUT -> if (style.family == MelosFamily.SMOOTH) 0.5 else n.roomStart + (1 - n.roomStart) / 2
         StyleSound.PLAIN_FADE -> 0.5
         else -> null
     }
 
     /** Where the outgoing song leaves a style and whether it fades there (else it is cut), null when it has its own tail or ends by itself. */
-    private fun leaving(style: OrpheonStyle): Pair<Double, Boolean>? = when (style.sound) {
+    private fun leaving(style: MelosStyle): Pair<Double, Boolean>? = when (style.sound) {
         StyleSound.FILTERED -> (if (style.arrive == Arrival.QUARTER) 0.75 else 1.0) - 1e-3 to false
         StyleSound.LOOP_OUT, StyleSound.GAPLESS -> 1.0 - 1e-3 to false
         StyleSound.PLAIN_FADE -> 0.85 to true

@@ -94,7 +94,7 @@ class StoreTest {
         assertNull(AppVersion.parse("two"))
     }
 
-    @Test fun orpheonMeetsTheMinimumsOfMyspotiUpToItsLastVersion() {
+    @Test fun melosMeetsTheMinimumsOfMyspotiUpToItsLastVersion() {
         assertTrue(AppVersion.atLeast("1.0.0", "2.3.0"))
         assertTrue(AppVersion.atLeast("1.0.0-beta.1", "2.4.0"))
         assertFalse(AppVersion.atLeast("1.0.0", "2.5.0"))

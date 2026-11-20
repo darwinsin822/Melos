@@ -36,14 +36,14 @@ data class SegueTuning(
     val carryFromBars: Int = 4,
     val carryMaxOffUs: Long = 80_000,
 
-    /** Which planner writes the plan: [PLANNER_COMPACT] (the default) or [PLANNER_ORPHEON], for an A/B. */
+    /** Which planner writes the plan: [PLANNER_COMPACT] (the default) or [PLANNER_MELOS], for an A/B. */
     val planner: Int = PLANNER_COMPACT,
-    /** The [MixIdea]s the Orpheon planner plays with, as their bits: none by default, the Mix Lab chooses. */
+    /** The [MixIdea]s the Melos planner plays with, as their bits: none by default, the Mix Lab chooses. */
     val ideas: Int = 0,
 
     /** The planner's values. */
     val compact: CompactTuning = CompactTuning(),
-    val orpheon: OrpheonTuning = OrpheonTuning(),
+    val melos: MelosTuning = MelosTuning(),
 
     // ── The engine's sound ──
     /** Headroom while both songs play. */
@@ -76,7 +76,7 @@ data class SegueTuning(
 ) {
     companion object {
         const val PLANNER_COMPACT = 0
-        const val PLANNER_ORPHEON = 1
+        const val PLANNER_MELOS = 1
 
         /** The band where two bass lines mask each other [U]. Fixed at analysis: not varied by the harness. */
         const val BASS_LOW_HZ = 20.0
@@ -199,11 +199,11 @@ data class Headroom(
 )
 
 /**
- * The Orpheon planner's values, fitted on a tuning split of the reference plans with the bench
- * (`with=orpheon.field:value`); `sections`-dependent entries stay coarse. To be confirmed by ear.
+ * The Melos planner's values, fitted on a tuning split of the reference plans with the bench
+ * (`with=melos.field:value`); `sections`-dependent entries stay coarse. To be confirmed by ear.
  * Scores start at 1 and lose these costs.
  */
-data class OrpheonTuning(
+data class MelosTuning(
     // ── Timing ──
     /**
      * No transition starts sooner than this after the point the player asked for. The player's own

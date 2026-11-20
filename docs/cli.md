@@ -5,7 +5,7 @@ through the app's own code paths without screenshots or taps. Stable releases le
 off in their manifest, and it answers nothing outside debug and beta builds even if turned on.
 
 ```
-tools/myspoti-cli [-p app.orpheon.beta.dev] [-s serial] [-t 40] [--raw] <command> [args…]
+tools/myspoti-cli [-p app.melos.beta.dev] [-s serial] [-t 40] [--raw] <command> [args…]
 ```
 
 Each command is one broadcast (`<package>.CLI`, held to the adb shell by the `DUMP` permission).
@@ -18,7 +18,7 @@ time), `2` device unreachable (`adb get-state` is not `device`, or several devic
 has no CLI receiver: it leaves the broadcast's result at 0, where the receiver sets 1; `ext.why` is
 debug only). The script always targets one device: `-s` or `ANDROID_SERIAL`, else the only one adb
 lists; with several and none named it refuses. `ADB`, `ANDROID_SERIAL` and `MYSPOTI_PACKAGE` override
-the defaults (the beta is `-p app.orpheon`).
+the defaults (the beta is `-p app.melos`).
 
 ## Commands
 

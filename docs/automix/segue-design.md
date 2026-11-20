@@ -92,7 +92,7 @@ outgoing song's position.
 
 `loop` is the exception: the deck goes round a short slice of the outgoing song in its own buffer
 while the player runs on, so nothing seeks. `atUs` is where in the song, `units` the slice's
-microseconds. Only the Orpheon planner emits it.
+microseconds. Only the Melos planner emits it.
 
 ### Serialisation
 
@@ -276,13 +276,13 @@ The engine's own sound (headroom, shelves, the isolator, sends) is in `SegueTuni
 does not write sends, so those values are for the deck only. The sends (`echoDelayUs`,
 `roomCombUs`, `sendTailUs`) are played when a plan asks for them.
 
-## The Orpheon planner
+## The Melos planner
 
-A second planner (`OrpheonPolicy`), behind the Mix Lab's switch for an A/B against the compact one.
+A second planner (`MelosPolicy`), behind the Mix Lab's switch for an A/B against the compact one.
 It reads only `SongMap`, which any analyser can fill, and tries four families in turn: beat-locked,
 smooth blend, silence join (the song plays to its end and the next one is butted against it), plain
-fade. Its values are in `OrpheonTuning` and were set on the bench against reference plans
-(`segue <dir> orpheon`), then on renders; none is taken from another product.
+fade. Its values are in `MelosTuning` and were set on the bench against reference plans
+(`segue <dir> melos`), then on renders; none is taken from another product.
 
 ### Which pairs lock
 

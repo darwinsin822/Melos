@@ -10,20 +10,20 @@ import java.util.Base64
  * What the receiving device's QR code says: where it listens on the local network, its public
  * key, a one-time token and its name, as a link that a phone's camera (Samsung's, Google Lens)
  * opens in the app straight on the confirmation:
- * `orpheon://pass?v=1&a=192.168.1.20:41234&k=…&t=…&n=Living+room+TV`. An app scheme and not an
+ * `melos://pass?v=1&a=192.168.1.20:41234&k=…&t=…&n=Living+room+TV`. An app scheme and not an
  * https link: the project has no web domain of its own to verify an App Link with. The codes of
- * before (`orpheon-pass:1?a=…`, the desktop app's until it moves to this one) still read.
+ * before (`melos-pass:1?a=…`, the desktop app's until it moves to this one) still read.
  */
 data class PassInvite(val host: String, val port: Int, val key: ByteArray, val token: ByteArray, val name: String) {
     fun toText(): String = "$LINK?v=1&a=$host:$port&k=${b64(key)}&t=${b64(token)}&n=${URLEncoder.encode(name.take(40), "UTF-8")}"
 
     companion object {
         /** The app's own link scheme (the manifest's intent filter on MainActivity). */
-        const val LINK_SCHEME = "orpheon"
+        const val LINK_SCHEME = "melos"
         const val LINK_HOST = "pass"
         const val LINK = "$LINK_SCHEME://$LINK_HOST"
         /** The QR codes' text of before, still read by the app's scanner. */
-        const val SCHEME = "orpheon-pass"
+        const val SCHEME = "melos-pass"
         private fun b64(b: ByteArray) = Base64.getUrlEncoder().withoutPadding().encodeToString(b)
         private fun unb64(s: String) = Base64.getUrlDecoder().decode(s)
 
@@ -37,7 +37,7 @@ data class PassInvite(val host: String, val port: Int, val key: ByteArray, val t
             val query = when {
                 t.startsWith("$SCHEME:1?") -> t.substringAfter('?')
                 // The scheme and the host as the link gives them, any case; then nothing but the query
-                // (orpheon://pass/x?… or orpheon://pass.evil?… are not this app's).
+                // (melos://pass/x?… or melos://pass.evil?… are not this app's).
                 t.length > LINK.length && t.regionMatches(0, LINK, 0, LINK.length, ignoreCase = true) -> {
                     val rest = t.substring(LINK.length).removePrefix("/")
                     if (!rest.startsWith("?")) return null

@@ -1,6 +1,6 @@
 /*
  * SPDX-License-Identifier: GPL-3.0-only
- * Orpheon page script for music.youtube.com (the official web app), injected by the host after each
+ * Melos page script for music.youtube.com (the official web app), injected by the host after each
  * page load (Android WebView or desktop Chrome over CDP). It only tells the host what the web app
  * says about itself (signed in, its client version, language and country), for the app's own API
  * requests. It plays nothing, and touches neither the page's player nor its ads.

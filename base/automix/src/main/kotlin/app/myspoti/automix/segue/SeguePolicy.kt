@@ -37,7 +37,7 @@ class SegueDecision(
     val restoreSec: Double = 0.0,
     /** How the transition sounds, for the journal: the plan's lanes are what plays. */
     val shape: SegueShape? = null,
-    /** The Orpheon planner's family and style, for the journal. */
+    /** The Melos planner's family and style, for the journal. */
     val style: String? = null,
 ) {
     val why: String get() = attempts.joinToString("; ")
@@ -66,7 +66,7 @@ class SegueRequest(
      */
     val genreA: GenreFamily? = null,
     val genreB: GenreFamily? = null,
-    /** The listener's mix length for the Orpheon planner (see [OrpheonRequest.minBars]). */
+    /** The listener's mix length for the Melos planner (see [MelosRequest.minBars]). */
     val minBars: Int? = null,
     val fadeSec: Double? = null,
 )
@@ -78,7 +78,7 @@ class SegueRequest(
  */
 object SeguePolicy {
     fun decide(r: SegueRequest): SegueDecision =
-        if (r.tuning.planner == SegueTuning.PLANNER_ORPHEON) OrpheonPolicy.decide(r) else CompactPolicy.decide(r)
+        if (r.tuning.planner == SegueTuning.PLANNER_MELOS) MelosPolicy.decide(r) else CompactPolicy.decide(r)
 
     /** A plan whose start has already gone by when it is ready is cancelled, never played late. */
     fun cueMissed(p: SeguePlan, positionUs: Long): Boolean = positionUs > p.outgoing.anchorUs

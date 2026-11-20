@@ -300,7 +300,7 @@ data class DownloadFile(
 
 /**
  * One `playback` event (docs/extensions/API.md §3): what happened to the song playing, in
- * Orpheon's own player (`source = "local"`: downloads, local files, extensions' audio). The
+ * Melos's own player (`source = "local"`: downloads, local files, extensions' audio). The
  * `"spotify"` source and origin are no longer sent; they stay known for the extensions that test them.
  */
 @Serializable
@@ -343,7 +343,7 @@ data class PlaybackEvent(
         const val LOCAL = "local"
         const val SPOTIFY = "spotify"
 
-        /** No longer sent (Orpheon plays nothing from Spotify); kept for the extensions that compare with it. */
+        /** No longer sent (Melos plays nothing from Spotify); kept for the extensions that compare with it. */
         const val ORIGIN_SPOTIFY = "spotify"
         /** A song downloaded with a download-source extension. */
         const val ORIGIN_DOWNLOAD = "download"

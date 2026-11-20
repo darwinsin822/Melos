@@ -794,7 +794,7 @@ object LocalPlayer {
             if (!segueDecided(a, b, ra, rb, earliest)) return null
             // A start that went by while the plan was being made is cancelled, not played late.
             val plan = choosePlan(ra, rb, earliest)?.takeUnless { c ->
-                com.music.spotui.automix.AutoMix.orpheon && c.segue?.let { s -> app.myspoti.automix.segue.SeguePolicy.cueMissed(s, p.currentPosition * 1000) } == true
+                com.music.spotui.automix.AutoMix.melos && c.segue?.let { s -> app.myspoti.automix.segue.SeguePolicy.cueMissed(s, p.currentPosition * 1000) } == true
             }
             if (plan == null) {
                 noMixFor = ra to rb
@@ -1326,7 +1326,7 @@ object LocalPlayer {
     private fun mixMoved() {
         planned = null; preparationFailures = 0; noMixFor = null; segueWork = null
         // The new planner starts again from the new position half a second later; the deck is released below.
-        retryDeckAt = if (com.music.spotui.automix.AutoMix.orpheon) android.os.SystemClock.uptimeMillis() + 500 else 0
+        retryDeckAt = if (com.music.spotui.automix.AutoMix.melos) android.os.SystemClock.uptimeMillis() + 500 else 0
         val run = mix ?: return
         if (run.state < MixState.MIXING) cancelMix("seek", again = true)
     }

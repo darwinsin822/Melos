@@ -15,8 +15,8 @@ import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.sin
 
-class OrpheonPlannerTest {
-    private val t = SegueTuning(planner = SegueTuning.PLANNER_ORPHEON)
+class MelosPlannerTest {
+    private val t = SegueTuning(planner = SegueTuning.PLANNER_MELOS)
 
     /** A steady song: bars of four beats, a section every [sectionBars] bars, level -10 dB except where told. */
     private fun song(
@@ -50,7 +50,7 @@ class OrpheonPlannerTest {
     }
 
     private fun plan(a: SongMap, b: SongMap, only: String? = null, earliestUs: Long = 0, harmonic: Boolean = true, ideas: Set<MixIdea> = emptySet()) =
-        OrpheonPolicy.plan(a, b, OrpheonRequest(earliestExitUs = earliestUs, harmonic = harmonic, tuning = t.copy(ideas = MixIdea.mask(ideas))), only)
+        MelosPolicy.plan(a, b, MelosRequest(earliestExitUs = earliestUs, harmonic = harmonic, tuning = t.copy(ideas = MixIdea.mask(ideas))), only)
 
     private fun SongMap.with(genre: GenreFamily = this.genre, danceability: Double? = this.danceability, loudnessCurve: FloatArray = this.loudnessCurve) =
         SongMap(durationSec, beatsSec, downbeatsSec, tempoBpm, beatsPerBar, sections, loudnessStepSec, loudnessCurve, loudness, vocals, key, fadeIn, fadeOut,
@@ -63,21 +63,21 @@ class OrpheonPlannerTest {
         assertTrue(SegueDeck.playable(p))
     }
 
-    private fun pairFor(style: OrpheonStyle): Pair<SongMap, SongMap> {
+    private fun pairFor(style: MelosStyle): Pair<SongMap, SongMap> {
         val genre = style.genres.first()
         val bpm = if (style.id == "blend-long") 140.0 else 120.0
         return when (style.family) {
-            OrpheonFamily.LOCKED -> song("a", genre = genre, bpm = bpm) to song("b", genre = genre, bpm = bpm * 1.03)
-            OrpheonFamily.SMOOTH -> song("a", genre = genre, grid = false, fade = SongRange(165.0, 198.0), sectionBars = 8) to song("b")
-            OrpheonFamily.SILENCE -> song("a", genre = genre, grid = false, silentEnd = 6.0) to song("b", grid = false)
-            OrpheonFamily.FALLBACK -> song("a", genre = genre, grid = false) to song("b", grid = false)
+            MelosFamily.LOCKED -> song("a", genre = genre, bpm = bpm) to song("b", genre = genre, bpm = bpm * 1.03)
+            MelosFamily.SMOOTH -> song("a", genre = genre, grid = false, fade = SongRange(165.0, 198.0), sectionBars = 8) to song("b")
+            MelosFamily.SILENCE -> song("a", genre = genre, grid = false, silentEnd = 6.0) to song("b", grid = false)
+            MelosFamily.FALLBACK -> song("a", genre = genre, grid = false) to song("b", grid = false)
         }
     }
 
     private fun lane(p: SeguePlan, side: LaneSide, target: Target) = p.lanes.firstOrNull { it.side == side && it.target == target }
 
     @Test fun everyStyleOfTheCatalogueGivesAPlanTheDeckCanPlay() {
-        for (style in OrpheonStyles.CATALOGUE) {
+        for (style in MelosStyles.CATALOGUE) {
             val (a, b) = pairFor(style)
             val o = plan(a, b, style.id)
             assertEquals(style.id, style, o.style)
@@ -89,7 +89,7 @@ class OrpheonPlannerTest {
     @Test fun twoSteadySongsLockAndSitWhereTheyMay() {
         val a = song("a"); val b = song("b")
         val o = plan(a, b)
-        assertEquals(OrpheonFamily.LOCKED, o.family)
+        assertEquals(MelosFamily.LOCKED, o.family)
         val p = o.decision.plan!!
         validated(a, b, p)
         assertEquals(PulseState.LOCKED, p.pulse.state)
@@ -108,7 +108,7 @@ class OrpheonPlannerTest {
         val a = song("a"); val b = song("b")
         assertEquals("myspoti-adaptive-2", SeguePolicy.decide(SegueRequest(a, b)).plan!!.origin.engine)
         val d = SeguePolicy.decide(SegueRequest(a, b, tuning = t))
-        assertEquals(OrpheonPolicy.ORIGIN, d.plan!!.origin)
+        assertEquals(MelosPolicy.ORIGIN, d.plan!!.origin)
         assertNotNull(d.style)
         assertNotNull(SeguePolicy.timing(d))
     }
@@ -196,24 +196,24 @@ class OrpheonPlannerTest {
 
     @Test fun halfAndDoubleTimeLock() {
         val half = plan(song("a", bpm = 160.0, genre = GenreFamily.HIPHOP), song("b", bpm = 80.0, genre = GenreFamily.HIPHOP), "hiphop-delay")
-        assertEquals(OrpheonFamily.LOCKED, half.family)
+        assertEquals(MelosFamily.LOCKED, half.family)
         val p = half.decision.plan!!
         // Four bars of 1.5 s against two of 3 s.
         assertEquals(6_000_000L, p.span.lengthUs)
         val double = plan(song("a", bpm = 80.0, genre = GenreFamily.HIPHOP), song("b", bpm = 160.0, genre = GenreFamily.HIPHOP), "hiphop-delay")
-        assertEquals(OrpheonFamily.LOCKED, double.family)
+        assertEquals(MelosFamily.LOCKED, double.family)
         assertEquals(6_000_000L, double.decision.plan!!.span.lengthUs)
     }
 
     @Test fun tempiOutOfReachAreNotLocked() {
         val o = plan(song("a", bpm = 120.0), song("b", bpm = 162.0))
-        assertTrue(o.family != OrpheonFamily.LOCKED)
+        assertTrue(o.family != MelosFamily.LOCKED)
         assertTrue(o.decision.why, o.decision.attempts.any { it.cause == SegueCause.TEMPO_OUT_OF_REACH })
     }
 
     @Test fun aLongBlendReachesAWiderGapThanAShortStyle() {
         // A gap of 29 %: a filtered blend may, a short style may not.
-        assertEquals(OrpheonFamily.LOCKED, plan(song("a"), song("b", bpm = 154.8), "pop-filter").family)
+        assertEquals(MelosFamily.LOCKED, plan(song("a"), song("b", bpm = 154.8), "pop-filter").family)
         assertNull(plan(song("a"), song("b", bpm = 154.8), "pop-delay").style)
     }
 
@@ -221,18 +221,18 @@ class OrpheonPlannerTest {
         val a = song("a")
         val waltz = song("w").let { SongMap(it.durationSec, it.beatsSec, it.downbeatsSec, it.tempoBpm, 3, it.sections, it.loudnessStepSec, it.loudnessCurve, it.loudness,
             genre = it.genre, confidence = it.confidence, audioKey = "w", gridKey = "w") }
-        assertTrue(plan(a, waltz).family != OrpheonFamily.LOCKED)
+        assertTrue(plan(a, waltz).family != MelosFamily.LOCKED)
     }
 
     @Test fun anUnstableSpanIsNotLocked() {
         val s = song("a")
         val shaky = SongMap(s.durationSec, DoubleArray(s.beatsSec.size) { s.beatsSec[it] + if (it % 2 == 0) 0.07 else -0.07 }, s.downbeatsSec, s.tempoBpm, 4, s.sections, s.loudnessStepSec,
             s.loudnessCurve, s.loudness, genre = s.genre, confidence = s.confidence, audioKey = "a", gridKey = "a")
-        assertTrue(plan(shaky, song("b")).family != OrpheonFamily.LOCKED)
+        assertTrue(plan(shaky, song("b")).family != MelosFamily.LOCKED)
     }
 
     @Test fun eachStyleSoundsAsItsGesture() {
-        fun of(id: String) = OrpheonStyles.byId(id)!!.let { s -> pairFor(s).let { (a, b) -> plan(a, b, id).decision.plan!! } }
+        fun of(id: String) = MelosStyles.byId(id)!!.let { s -> pairFor(s).let { (a, b) -> plan(a, b, id).decision.plan!! } }
         val delay = of("hiphop-delay")
         assertNotNull(lane(delay, LaneSide.OUTGOING, Target.SEND_ECHO))
         assertNotNull(lane(delay, LaneSide.OUTGOING, Target.RISE_HZ))
@@ -240,7 +240,7 @@ class OrpheonPlannerTest {
         assertEquals(375_000L, delay.echoUs)
         // The incoming song comes up under the outgoing one, then leads from one bar before the end, where the outgoing one is cut.
         val inLevel = LaneCurve(lane(delay, LaneSide.INCOMING, Target.LEVEL)!!)
-        val n = SegueTuning().orpheon
+        val n = SegueTuning().melos
         assertTrue(inLevel.value(0.1 * SegueFormat.T_MAX) < inLevel.value(0.3 * SegueFormat.T_MAX))
         assertTrue(inLevel.value(0.3 * SegueFormat.T_MAX) in (n.arriveUnderDb + n.arriveRiseDb)..n.arriveUnderDb)
         assertEquals(0.0, inLevel.value(0.8 * SegueFormat.T_MAX), 1e-6)
@@ -259,7 +259,7 @@ class OrpheonPlannerTest {
         val long = of("blend-long")
         val sweep = LaneCurve(lane(long, LaneSide.OUTGOING, Target.SWEEP_HZ)!!)
         assertEquals("the long blend waits for the middle half", SegueFormat.SWEEP_OPEN_HZ, sweep.value(0.2 * SegueFormat.T_MAX), 1e-6)
-        assertEquals(SegueTuning().orpheon.blendCloseHz, sweep.value(0.75 * SegueFormat.T_MAX), 1.0)
+        assertEquals(SegueTuning().melos.blendCloseHz, sweep.value(0.75 * SegueFormat.T_MAX), 1.0)
         // The long blend's outgoing song is gone at three quarters.
         assertEquals(SegueFormat.LEVEL_FLOOR_DB, LaneCurve(lane(long, LaneSide.OUTGOING, Target.LEVEL)!!).value(0.8 * SegueFormat.T_MAX), 1e-6)
         val short = LaneCurve(lane(of("blend"), LaneSide.OUTGOING, Target.SWEEP_HZ)!!)
@@ -274,7 +274,7 @@ class OrpheonPlannerTest {
     @Test fun aFadingEndBlendsSmoothlyFromASection() {
         val a = song("a", grid = false, fade = SongRange(165.0, 198.0), sectionBars = 8)
         val o = plan(a, song("b"))
-        assertEquals(OrpheonFamily.SMOOTH, o.family)
+        assertEquals(MelosFamily.SMOOTH, o.family)
         val p = o.decision.plan!!
         assertEquals(5_000_000L, p.span.lengthUs)
         assertEquals(SegueFormat.RATE_NOMINAL, p.outgoing.ratePpm)
@@ -288,7 +288,7 @@ class OrpheonPlannerTest {
         val a = song("a", grid = false, silentEnd = 6.0)
         val b = song("b", grid = false)
         val o = plan(a, b)
-        assertEquals(OrpheonFamily.SILENCE, o.family)
+        assertEquals(MelosFamily.SILENCE, o.family)
         val p = o.decision.plan!!
         // The six silent seconds and the lead before them.
         assertEquals(6_750_000L, p.span.lengthUs)
@@ -300,22 +300,22 @@ class OrpheonPlannerTest {
 
     @Test fun aSilentStartOfTheNextSongIsRemovedToo() {
         val o = plan(song("a", grid = false, silentEnd = 2.0), song("b", grid = false, silentStart = 5.0))
-        assertEquals(OrpheonFamily.SILENCE, o.family)
+        assertEquals(MelosFamily.SILENCE, o.family)
         val p = o.decision.plan!!
         assertEquals(0L, p.incoming.anchorUs)
         assertTrue(p.span.lengthUs in 1_000_000L..9_000_000L)
         // After a song loud to its end there is nothing to butt against: the fade, entering past the silence.
         val faded = plan(song("a", grid = false), song("b", grid = false, silentStart = 5.0))
-        assertEquals(OrpheonFamily.FALLBACK, faded.family)
+        assertEquals(MelosFamily.FALLBACK, faded.family)
         assertEquals(4.8, faded.decision.plan!!.incoming.anchorUs / 1e6, 0.01)
     }
 
     @Test fun songsLoudToTheJunctionAreFadedNotButted() {
         // Build 3127 by ear: joining two songs with no silence between them was a cut, the plain fade won.
         val loud = plan(song("a", grid = false), song("b", grid = false))
-        assertEquals(OrpheonFamily.FALLBACK, loud.family)
+        assertEquals(MelosFamily.FALLBACK, loud.family)
         assertTrue(loud.decision.attempts.any { it.cause == SegueCause.GUARDS && it.detail == "no dead air" })
-        assertEquals(OrpheonFamily.SILENCE, plan(song("a", grid = false, silentEnd = 2.0), song("b", grid = false)).family)
+        assertEquals(MelosFamily.SILENCE, plan(song("a", grid = false, silentEnd = 2.0), song("b", grid = false)).family)
     }
 
     @Test fun aSongWithAnIntroIsHandedTheLeadOnItsDrop() {
@@ -332,7 +332,7 @@ class OrpheonPlannerTest {
             assertEquals(style, drop, hand, 0.01)
         }
         // Left alone in its intro, the song would sag: such a place scores far lower than the drop.
-        val t0 = SegueTuning().orpheon
+        val t0 = SegueTuning().melos
         assertTrue(t0.costWeakHandover > t0.costNearDrop)
     }
 
@@ -352,7 +352,7 @@ class OrpheonPlannerTest {
         val a = song("a", grid = false); val b = song("b", grid = false)
         // Too late for the silence join: only the fade still has room.
         val o = plan(a, b, earliestUs = 198_000_000)
-        assertEquals(OrpheonFamily.FALLBACK, o.family)
+        assertEquals(MelosFamily.FALLBACK, o.family)
         val p = o.decision.plan!!
         validated(a, b, p)
         assertEquals(setOf(Target.LEVEL), p.lanes.map { it.target }.toSet())
@@ -365,10 +365,10 @@ class OrpheonPlannerTest {
         val a = song("a"); val b = song("b")
         val at = 170_000_000L
         val p = plan(a, b, earliestUs = at).decision.plan!!
-        assertTrue(p.outgoing.anchorUs >= at + (SegueTuning().orpheon.safetySec * 1e6).toLong())
+        assertTrue(p.outgoing.anchorUs >= at + (SegueTuning().melos.safetySec * 1e6).toLong())
         val late = 198_000_000L
         val o = plan(a, b, earliestUs = late)
-        assertEquals(OrpheonFamily.FALLBACK, o.family)
+        assertEquals(MelosFamily.FALLBACK, o.family)
         assertTrue(o.decision.plan!!.outgoing.anchorUs >= late)
     }
 
@@ -392,7 +392,7 @@ class OrpheonPlannerTest {
         val sung = listOf(SongVocal(0.0, 200.0, 0.9, VocalKind.SUNG))
         val clean = plan(song("a"), song("b")).decision.score!!
         val clash = plan(song("a", vocals = sung), song("b", vocals = sung))
-        assertEquals(OrpheonFamily.LOCKED, clash.family)
+        assertEquals(MelosFamily.LOCKED, clash.family)
         assertTrue(clash.decision.score!! < clean)
     }
 
@@ -415,7 +415,7 @@ class OrpheonPlannerTest {
     }
 
     @Test fun nothingClipsOnARenderedPair() {
-        for (ideas in listOf(emptySet(), MixIdea.values().toSet())) for (style in OrpheonStyles.CATALOGUE) {
+        for (ideas in listOf(emptySet(), MixIdea.values().toSet())) for (style in MelosStyles.CATALOGUE) {
             val (a, b) = pairFor(style)
             val p = plan(a, b, style.id, ideas = ideas).decision.plan!!
             validated(a, b, p)
@@ -438,7 +438,7 @@ class OrpheonPlannerTest {
 
     @Test fun theIncomingSongTakesTheLeadOnAPhrase() {
         // 120 BPM: bars of 2 s, phrases of eight bars.
-        fun entry(id: String, seed: Int) = plan(song("a$seed", genre = OrpheonStyles.byId(id)!!.genres.first()), song("b$seed", genre = OrpheonStyles.byId(id)!!.genres.first()), id)
+        fun entry(id: String, seed: Int) = plan(song("a$seed", genre = MelosStyles.byId(id)!!.genres.first()), song("b$seed", genre = MelosStyles.byId(id)!!.genres.first()), id)
             .let { o -> o.decision.plan!!.let { Triple(it.incoming.anchorUs / 1e6, it.span.musicalUnits!!, o.style!!) } }
         for (seed in 0 until 6) for (id in listOf("hiphop-loop", "hiphop-delay", "hiphop-filter", "hiphop-long", "pop-reverb")) {
             val (at, bars, style) = entry(id, seed)
@@ -453,27 +453,27 @@ class OrpheonPlannerTest {
             val same = plan(song("a$seed", genre = GenreFamily.HIPHOP), song("b$seed", genre = GenreFamily.HIPHOP))
             assertTrue(same.style!!.id, GenreFamily.HIPHOP in same.style!!.genres)
             val mixed = plan(song("a$seed", genre = GenreFamily.HIPHOP).with(danceability = 0.9), song("b$seed", genre = GenreFamily.DANCE))
-            assertEquals(OrpheonFamily.LOCKED, mixed.family)
+            assertEquals(MelosFamily.LOCKED, mixed.family)
             assertTrue(mixed.style!!.id, GenreFamily.OTHER in mixed.style!!.genres)
         }
     }
 
     @Test fun songsOneCannotDanceToPlayToTheirEnd() {
         val a = song("a", genre = GenreFamily.HIPHOP); val b = song("b", genre = GenreFamily.HIPHOP)
-        assertEquals(OrpheonFamily.LOCKED, plan(a.with(danceability = 0.5), b.with(danceability = 0.5)).family)
+        assertEquals(MelosFamily.LOCKED, plan(a.with(danceability = 0.5), b.with(danceability = 0.5)).family)
         // Loud to their last second, these songs have no silence to remove: the plain fade.
-        assertEquals(OrpheonFamily.FALLBACK, plan(a.with(danceability = 0.5), b.with(danceability = 0.2)).family)
+        assertEquals(MelosFamily.FALLBACK, plan(a.with(danceability = 0.5), b.with(danceability = 0.2)).family)
         // Any other pair must be plainly danceable; unknown, a song is what its family usually is.
-        assertEquals(OrpheonFamily.FALLBACK, plan(a.with(GenreFamily.POP, 0.5), b.with(GenreFamily.DANCE, 0.9)).family)
-        assertEquals(OrpheonFamily.LOCKED, plan(a.with(GenreFamily.POP, 0.8), b.with(GenreFamily.DANCE, 0.9)).family)
-        assertEquals(OrpheonFamily.FALLBACK, plan(a.with(GenreFamily.OTHER), b.with(GenreFamily.DANCE)).family)
-        assertEquals(OrpheonFamily.LOCKED, plan(a.with(GenreFamily.DANCE), b.with(GenreFamily.DANCE)).family)
+        assertEquals(MelosFamily.FALLBACK, plan(a.with(GenreFamily.POP, 0.5), b.with(GenreFamily.DANCE, 0.9)).family)
+        assertEquals(MelosFamily.LOCKED, plan(a.with(GenreFamily.POP, 0.8), b.with(GenreFamily.DANCE, 0.9)).family)
+        assertEquals(MelosFamily.FALLBACK, plan(a.with(GenreFamily.OTHER), b.with(GenreFamily.DANCE)).family)
+        assertEquals(MelosFamily.LOCKED, plan(a.with(GenreFamily.DANCE), b.with(GenreFamily.DANCE)).family)
     }
 
     // ── Ideas ──
 
     @Test fun withoutIdeasAStyleKeepsToItsOwnLanes() {
-        val (a, b) = pairFor(OrpheonStyles.byId("blend")!!)
+        val (a, b) = pairFor(MelosStyles.byId("blend")!!)
         val p = plan(a, b, "blend").decision.plan!!
         assertNull(lane(p, LaneSide.INCOMING, Target.BASS_BAND))
         assertNull(lane(p, LaneSide.OUTGOING, Target.SEND_ECHO))
@@ -482,22 +482,22 @@ class OrpheonPlannerTest {
     }
 
     @Test fun theBassWaitsUntilTheOutgoingSongIsGone() {
-        val (a, b) = pairFor(OrpheonStyles.byId("blend")!!)
+        val (a, b) = pairFor(MelosStyles.byId("blend")!!)
         val bass = LaneCurve(lane(plan(a, b, "blend", ideas = setOf(MixIdea.BASS_HANDOVER)).decision.plan!!, LaneSide.INCOMING, Target.BASS_BAND)!!)
         assertEquals(SegueTuning().compact.bassKillDb, bass.value(0.9 * SegueFormat.T_MAX), 1e-6)
         assertEquals(0.0, bass.value(1.0 * SegueFormat.T_MAX), 1e-6)
         // A long blend's outgoing song is cut at three quarters: the bass changes hands there.
-        val (c, d) = pairFor(OrpheonStyles.byId("blend-long")!!)
+        val (c, d) = pairFor(MelosStyles.byId("blend-long")!!)
         val long = LaneCurve(lane(plan(c, d, "blend-long", ideas = setOf(MixIdea.BASS_HANDOVER)).decision.plan!!, LaneSide.INCOMING, Target.BASS_BAND)!!)
         assertEquals(0.0, long.value(0.76 * SegueFormat.T_MAX), 1e-6)
         // A plain fade swaps the two low ends in its middle.
-        val (e, f) = pairFor(OrpheonStyles.byId("fade")!!)
+        val (e, f) = pairFor(MelosStyles.byId("fade")!!)
         val fade = plan(e, f, "fade", ideas = setOf(MixIdea.BASS_HANDOVER)).decision.plan!!
         assertEquals(SegueTuning().compact.bassKillDb, LaneCurve(lane(fade, LaneSide.OUTGOING, Target.BASS_BAND)!!).value(0.6 * SegueFormat.T_MAX), 1e-6)
     }
 
     @Test fun theOutgoingSongLeavesOnAnEcho() {
-        val (a, b) = pairFor(OrpheonStyles.byId("blend")!!)
+        val (a, b) = pairFor(MelosStyles.byId("blend")!!)
         val p = plan(a, b, "blend", ideas = setOf(MixIdea.ECHO_TAIL)).decision.plan!!
         val send = LaneCurve(lane(p, LaneSide.OUTGOING, Target.SEND_ECHO)!!)
         assertEquals(0.0, send.value(0.5 * SegueFormat.T_MAX), 1e-6)
@@ -505,7 +505,7 @@ class OrpheonPlannerTest {
         assertEquals(375_000L, p.echoUs)
         assertTrue(SegueDeck.tailUs(p) > 0)
         // A style with a tail of its own keeps it.
-        val (c, d) = pairFor(OrpheonStyles.byId("pop-reverb")!!)
+        val (c, d) = pairFor(MelosStyles.byId("pop-reverb")!!)
         assertNull(lane(plan(c, d, "pop-reverb", ideas = setOf(MixIdea.ECHO_TAIL)).decision.plan!!, LaneSide.OUTGOING, Target.SEND_ECHO))
     }
 
@@ -518,7 +518,7 @@ class OrpheonPlannerTest {
         assertTrue(clear.decision.score!! < plain.decision.score!!)
         assertNull(lane(plain.decision.plan!!, LaneSide.OUTGOING, Target.BAND_CORE))
         val carve = LaneCurve(lane(clear.decision.plan!!, LaneSide.OUTGOING, Target.BAND_CORE)!!)
-        assertEquals(SegueTuning().orpheon.vocalCarveDb, carve.value(0.9 * SegueFormat.T_MAX), 1e-6)
+        assertEquals(SegueTuning().melos.vocalCarveDb, carve.value(0.9 * SegueFormat.T_MAX), 1e-6)
         // Nothing to carve when only one of them sings.
         assertNull(lane(plan(song("a"), b, ideas = setOf(MixIdea.VOCAL_CLEAR)).decision.plan!!, LaneSide.OUTGOING, Target.BAND_CORE))
     }
@@ -538,9 +538,9 @@ class OrpheonPlannerTest {
 
     @Test fun gentleTempoLeavesDistantSongsUnlocked() {
         val a = song("a", genre = GenreFamily.HIPHOP, bpm = 120.0); val b = song("b", genre = GenreFamily.HIPHOP, bpm = 138.0)
-        assertEquals(OrpheonFamily.LOCKED, plan(a, b).family)
-        assertEquals(OrpheonFamily.FALLBACK, plan(a, b, ideas = setOf(MixIdea.GENTLE_TEMPO)).family)
-        assertEquals(OrpheonFamily.LOCKED, plan(a, song("c", genre = GenreFamily.HIPHOP, bpm = 126.0), ideas = setOf(MixIdea.GENTLE_TEMPO)).family)
+        assertEquals(MelosFamily.LOCKED, plan(a, b).family)
+        assertEquals(MelosFamily.FALLBACK, plan(a, b, ideas = setOf(MixIdea.GENTLE_TEMPO)).family)
+        assertEquals(MelosFamily.LOCKED, plan(a, song("c", genre = GenreFamily.HIPHOP, bpm = 126.0), ideas = setOf(MixIdea.GENTLE_TEMPO)).family)
     }
 
     @Test fun aQuietOpeningIsBlendedIntoMoreOften() {
@@ -613,7 +613,7 @@ class OrpheonPlannerTest {
     }
 
     @Test fun theTailOfASendStaysUnderTheCeiling() {
-        val style = OrpheonStyles.byId("pop-reverb")!!
+        val style = MelosStyles.byId("pop-reverb")!!
         val (a, b) = pairFor(style)
         val p = plan(a, b, style.id).decision.plan!!
         val headroom = SegueTuning().headroom
@@ -626,7 +626,7 @@ class OrpheonPlannerTest {
     }
 
     @Test fun theBenchComparesPlansWithReferences() {
-        val dir = Files.createTempDirectory("orpheon-bench").toFile()
+        val dir = Files.createTempDirectory("melos-bench").toFile()
         try {
             val maps = java.io.File(dir, "maps").also { it.mkdirs() }
             fun write(id: String, s: SongMap) {
@@ -645,7 +645,7 @@ class OrpheonPlannerTest {
             java.io.File(dir, "plans.jsonl").writeText(
                 "{\"a\":\"a\",\"b\":\"b\",\"family\":\"locked\",\"style\":\"x\",\"duration\":$len,\"out_start\":$out,\"out_end\":${out + len},\"in_start\":$inn,\"in_end\":${inn + len},\"rate_out\":1,\"rate_in\":1}\n" +
                     "{\"a\":\"a\",\"b\":\"nope\",\"family\":\"silence\",\"style\":\"x\",\"duration\":3,\"out_start\":0,\"out_end\":3,\"in_start\":0,\"in_end\":3,\"rate_out\":1,\"rate_in\":1}\n")
-            val report = OrpheonBench.measure(dir, t)
+            val report = MelosBench.measure(dir, t)
             assertEquals(1, report.rows.size)
             assertEquals(1, report.missing)
             assertEquals(1.0, report.familyAgreement, 1e-9)
@@ -658,8 +658,8 @@ class OrpheonPlannerTest {
     }
 
     @Test fun theBenchSearchesOverTheNewParameters() {
-        val changed = SegueCorpus.withValue(SegueTuning(), "orpheon.safetySec", 3.0)
-        assertEquals(3.0, changed.orpheon.safetySec, 0.0)
+        val changed = SegueCorpus.withValue(SegueTuning(), "melos.safetySec", 3.0)
+        assertEquals(3.0, changed.melos.safetySec, 0.0)
         assertEquals(1, SegueCorpus.withValue(SegueTuning(), "planner", 1.0).planner)
     }
 

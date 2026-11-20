@@ -40,34 +40,34 @@ class PassTest {
 
     @Test fun `the QR code is a link of the app's scheme that a camera opens`() {
         val text = invite.toText()
-        assertTrue(text, text.startsWith("orpheon://pass?v=1&a=192.168.1.20:41234&k="))
+        assertTrue(text, text.startsWith("melos://pass?v=1&a=192.168.1.20:41234&k="))
         val uri = java.net.URI(text)
-        assertEquals("orpheon", uri.scheme); assertEquals("pass", uri.host)
+        assertEquals("melos", uri.scheme); assertEquals("pass", uri.host)
         same(invite, PassInvite.parse(text))
         // As a camera or a browser may hand it on: other case for the scheme and host, a slash, spaces.
         same(invite, PassInvite.parse("  ORPHEON://Pass/?" + text.substringAfter('?') + "\n"))
     }
 
     @Test fun `the codes of before still read`() {
-        val old = "orpheon-pass:1?a=192.168.1.20:41234&k=${b64(invite.key)}&t=${b64(invite.token)}&n=Salon+TV"
+        val old = "melos-pass:1?a=192.168.1.20:41234&k=${b64(invite.key)}&t=${b64(invite.token)}&n=Salon+TV"
         same(invite, PassInvite.parse(old))
     }
 
     @Test fun `a link of another host, scheme, version or without its parts is not an invitation`() {
         val q = invite.toText().substringAfter('?')
         listOf(
-            "orpheon://other?$q", "orpheon://pass.example.com?$q", "orpheon://pass/x?$q", "orpheon://pass",
-            "orpheon://pass?", "https://pass?$q", "https://example.com/pass?$q", "orpheon-pass:2?$q", "orpheon:pass?$q",
-            "orpheon://pass?${q.replace("v=1", "v=2")}",
-            "orpheon://pass?${q.replace(Regex("&t=[^&]*"), "")}",
-            "orpheon://pass?${q.replace(Regex("&k=[^&]*"), "&k=AAAA")}",
-            "orpheon://pass?${q.replace(Regex("&t=[^&]*"), "&t=AAAA")}",
-            "orpheon://pass?${q.replace("192.168.1.20:41234", "192.168.1.20")}",
-            "orpheon://pass?${q.replace("192.168.1.20:41234", "192.168.1.20:99999")}",
-            "orpheon://pass?${q.replace("192.168.1.20", "8.8.8.8")}",
-            "orpheon://pass?${q.replace("192.168.1.20", "example.com")}",
-            "orpheon://pass?${q.replace("192.168.1.20", "127.0.0.1")}",
-            "", "orpheon", "Salon TV",
+            "melos://other?$q", "melos://pass.example.com?$q", "melos://pass/x?$q", "melos://pass",
+            "melos://pass?", "https://pass?$q", "https://example.com/pass?$q", "melos-pass:2?$q", "melos:pass?$q",
+            "melos://pass?${q.replace("v=1", "v=2")}",
+            "melos://pass?${q.replace(Regex("&t=[^&]*"), "")}",
+            "melos://pass?${q.replace(Regex("&k=[^&]*"), "&k=AAAA")}",
+            "melos://pass?${q.replace(Regex("&t=[^&]*"), "&t=AAAA")}",
+            "melos://pass?${q.replace("192.168.1.20:41234", "192.168.1.20")}",
+            "melos://pass?${q.replace("192.168.1.20:41234", "192.168.1.20:99999")}",
+            "melos://pass?${q.replace("192.168.1.20", "8.8.8.8")}",
+            "melos://pass?${q.replace("192.168.1.20", "example.com")}",
+            "melos://pass?${q.replace("192.168.1.20", "127.0.0.1")}",
+            "", "melos", "Salon TV",
         ).forEach { assertNull(it, PassInvite.parse(it)) }
     }
 

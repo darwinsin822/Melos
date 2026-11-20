@@ -2,7 +2,7 @@
 package app.myspoti.automix.segue
 
 /**
- * Ideas tried on top of the Orpheon planner, each on or off on its own so that one can be heard
+ * Ideas tried on top of the Melos planner, each on or off on its own so that one can be heard
  * against the planner without it. With none of them the planner places and shapes its transitions
  * as before; none changes what the deck can play.
  */

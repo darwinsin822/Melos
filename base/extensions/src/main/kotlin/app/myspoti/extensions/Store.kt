@@ -87,8 +87,8 @@ object AppVersion {
     }
 
     /**
-     * The last version of Myspoti, which this app continues under the name Orpheon from 1.0.0 on. A
-     * minimum from 2.0.0 on names a Myspoti version: Orpheon has everything of [MYSPOTI_LAST], so such
+     * The last version of Myspoti, which this app continues under the name Melos from 1.0.0 on. A
+     * minimum from 2.0.0 on names a Myspoti version: Melos has everything of [MYSPOTI_LAST], so such
      * a minimum is met when it is [MYSPOTI_LAST] or older (none newer was ever released).
      */
     const val MYSPOTI_LAST = "2.4.0"
@@ -97,8 +97,8 @@ object AppVersion {
     fun atLeast(app: String, min: String?): Boolean {
         if (min.isNullOrBlank() || parse(app) == null) return true
         val m = parse(min) ?: return compare(app, min) >= 0
-        val orpheon = parse(app)!!.core[0] < 2
-        if (orpheon && m.core[0] >= 2) return compare(MYSPOTI_LAST, min) >= 0
+        val melos = parse(app)!!.core[0] < 2
+        if (melos && m.core[0] >= 2) return compare(MYSPOTI_LAST, min) >= 0
         return compare(app, min) >= 0
     }
 }

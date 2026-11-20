@@ -86,7 +86,7 @@ data class AutoMixSettingsSnapshot(
     val durationMax: Int = 0,
     val performancePriority: Boolean = false,
     /** The Mix Lab's planner switch and the ideas played on top of it, by their names. */
-    val orpheon: Boolean = false,
+    val melos: Boolean = false,
     val ideas: Map<String, Boolean> = emptyMap(),
 ) {
     fun json(): JsonObject = buildJsonObject {
@@ -97,7 +97,7 @@ data class AutoMixSettingsSnapshot(
         put("tempo", tempo); put("pulse", pulse)
         put("duration-min", durationMin); put("duration-max", durationMax)
         put("performance-priority", performancePriority)
-        put("orpheon", orpheon)
+        put("melos", melos)
         for ((name, on) in ideas) put(name, on)
     }
 }
@@ -171,7 +171,7 @@ object CliParser {
                     val name = arg(0, "setting name")
                     val value = arg(1, "value")
                     val allowed = when (name) {
-                        "enabled", "segue", "orpheon", "ideas", "session-dj", "album-order", "podcasts", "harmonic", "eq", "show", "mobile-data" -> listOf("on", "off")
+                        "enabled", "segue", "melos", "ideas", "session-dj", "album-order", "podcasts", "harmonic", "eq", "show", "mobile-data" -> listOf("on", "off")
                         in app.myspoti.automix.segue.MixIdea.values().map { it.wire } -> listOf("on", "off")
                         "on-next" -> listOf("cut", "quick", "full")
                         "style" -> listOf("blend", "cut", "fade")

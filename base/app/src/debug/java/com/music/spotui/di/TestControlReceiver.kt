@@ -10,7 +10,7 @@ import kotlinx.serialization.json.jsonObject
 /**
  * Debug builds only: the playback test (tools/playback_test.py) sends the app's own
  * commands, as a tap would, with
- * `adb shell am broadcast -a app.myspoti.TEST -p app.orpheon.beta.dev --es cmd <cmd> ...`.
+ * `adb shell am broadcast -a app.myspoti.TEST -p app.melos.beta.dev --es cmd <cmd> ...`.
  * cmd: play (--es track <uri> --es context <uri>), resume, pause, next, previous, seek (--el ms <n>).
  * cmd: download (--es id <song id> --es title T --es artist A --ei ms <duration>), playdownloaded (--es id).
  * cmd: screenon (--ez on false to release) holds the screen on for a long run: One UI does not

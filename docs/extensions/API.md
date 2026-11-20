@@ -1,4 +1,4 @@
-# Orpheon extensions: API for authors
+# Melos extensions: API for authors
 
 An extension is a small JavaScript file plus a `manifest.json`. Myspoti runs it in a sandbox. What
 it may do is a list of **actions** from a closed catalogue the app defines (section 4): provide
@@ -94,7 +94,7 @@ action it lists, or is not installed. The official repository is suggested, neve
 
 **Installed** is organised **by area**: Playback, Lyrics & song info, Audio & downloads, Home &
 search, Menus & player, Library, Pages & more. Each area opens with a **Built-in** row (a
-dropdown of what Orpheon does there by itself, e.g. Lyrics: LRCLIB, NetEase, KuGou,
+dropdown of what Melos does there by itself, e.g. Lyrics: LRCLIB, NetEase, KuGou,
 Lyrics+, Genius; built-in sources are not extensions), then the extensions acting there with their
 switch and action icons, in the user's order (arrows). A newly installed extension is placed first in each area and in
 the audio and download source orders it gives; an update keeps the user's order. That order
@@ -378,7 +378,7 @@ romanizer calls a server.
 
 ### `audio-source`
 
-Where the audio of a song is. The song then plays in Orpheon's own player, like a download.
+Where the audio of a song is. The song then plays in Melos's own player, like a download.
 Action: `audio.source` (critical, ordered: the sources are asked in the user's order).
 
 ```js
@@ -577,7 +577,7 @@ order, one at a time.
   track,         // the track of this section
   positionMs, durationMs,
   timestamp,     // ms since 1970, UTC, when it happened
-  source,        // "local": Orpheon's own player
+  source,        // "local": Melos's own player
   contextUri,    // the list, album or artist it plays from; "" when unknown (a local file)
   shuffle,       // true or false
   reason,        // see below; null for progress, pause, resume
@@ -885,7 +885,7 @@ reader picks apart (section 3, `translationLanguage`). An older Myspoti has no `
 back: `var lang = myspoti.locale || 'en';`. Compare its first part to pick your strings:
 `lang.split('-')[0]`.
 
-`myspoti.player` (needs `playback.events` / `playback.control`) is Orpheon's own player.
+`myspoti.player` (needs `playback.events` / `playback.control`) is Melos's own player.
 
 ### `myspoti.http`
 
@@ -1193,7 +1193,7 @@ made the key and how the phone's keystore and boot state look.
 It proves that the key lives in Android hardware (the attestation's security level is
 StrongBox or TrustedEnvironment, never Software), that **the app package made it** (the attestation
 extension, `attestationApplicationId`, holds the package name and the SHA-256 digest of the
-certificate that signed the app: `app.orpheon` or `app.orpheon`, signed by the key you pin),
+certificate that signed the app: `app.melos` or `app.melos`, signed by the key you pin),
 and that your server asked for it (the challenge). Every later signature then comes from that key.
 
 It does **not** prove that the build is untouched: on a rooted phone, or with a patched official
@@ -1222,8 +1222,8 @@ by uninstalling.
    description): check `attestationChallenge` equals your challenge, `attestationSecurityLevel` is
    StrongBox or TrustedEnvironment, and in the authorization lists that the key is an EC P-256 key
    with purpose `SIGN`, with no `ALL_APPLICATIONS` and no software-only part.
-4. **Check the app.** In `attestationApplicationId`: the package name is `app.orpheon` (or
-   `app.orpheon` for the release), and one of the signing certificate digests is the
+4. **Check the app.** In `attestationApplicationId`: the package name is `app.melos` (or
+   `app.melos` for the release), and one of the signing certificate digests is the
    SHA-256 of the release certificate **you choose to pin** (`apksigner verify --print-certs` on
    the official APK). Optionally also read the root of trust (verified boot, locked bootloader).
 5. **Store** the key against the account or install, with the time and the level you saw.

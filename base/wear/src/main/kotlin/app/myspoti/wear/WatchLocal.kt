@@ -28,7 +28,7 @@ import kotlinx.coroutines.launch
  * straight from the network. A song no extension has is passed; after a few in a row the list stops.
  */
 object WatchLocal {
-    private const val TAG = "Orpheon"
+    private const val TAG = "Melos"
     private const val MAX_MISSES = 5
 
     class Now(val name: String, val artists: String, val playing: Boolean, val source: String, val cover: String? = null)

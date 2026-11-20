@@ -32,7 +32,7 @@ object PassLink {
 
     internal fun key(secret: ByteArray): SecretKeySpec {
         require(secret.size == SECRET_BYTES) { "the link's secret is 32 bytes" }
-        val k = Mac.getInstance("HmacSHA256").apply { init(SecretKeySpec(secret, "HmacSHA256")) }.doFinal("orpheon-link-v1".encodeToByteArray())
+        val k = Mac.getInstance("HmacSHA256").apply { init(SecretKeySpec(secret, "HmacSHA256")) }.doFinal("melos-link-v1".encodeToByteArray())
         return SecretKeySpec(k, "AES")
     }
 

@@ -709,13 +709,13 @@ private fun TransitionsRow() {
             checked = automix.segue, onChecked = automix::changeSegue)
         if (!automix.segueActive) OptionRow(stringResource(R.string.settings_automix_session), stringResource(R.string.settings_automix_session_detail),
             checked = automix.sessionDj, onChecked = automix::changeSessionDj)
-        // The planner: Orpheon by default, the earlier one as a way back.
-        OptionRow(stringResource(R.string.settings_automix_orpheon), stringResource(R.string.settings_automix_orpheon_detail),
-            checked = automix.orpheon, onChecked = automix::changeOrpheon)
-        // Each Orpheon idea on its own switch, only in the Mix Lab build, so their text is not translated.
+        // The planner: Melos by default, the earlier one as a way back.
+        OptionRow(stringResource(R.string.settings_automix_melos), stringResource(R.string.settings_automix_melos_detail),
+            checked = automix.melos, onChecked = automix::changeMelos)
+        // Each Melos idea on its own switch, only in the Mix Lab build, so their text is not translated.
         if (app.myspoti.engine.BuildConfig.APPLICATION_ID == "app.myspoti.automixlab") {
             for (idea in app.myspoti.automix.segue.MixIdea.values()) OptionRow(idea.title, idea.detail,
-                checked = automix.hasIdea(idea), enabled = automix.orpheon, onChecked = { automix.changeIdea(idea, it) })
+                checked = automix.hasIdea(idea), enabled = automix.melos, onChecked = { automix.changeIdea(idea, it) })
         }
         OptionRow(stringResource(R.string.settings_automix_album_order), stringResource(R.string.settings_automix_album_order_detail),
             checked = automix.albumOrder, onChecked = automix::changeAlbumOrder)

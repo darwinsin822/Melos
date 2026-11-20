@@ -34,10 +34,10 @@ import java.util.Base64
  * is down, straight over the Wi-Fi ([WatchLan]).
  */
 object WatchAnswers {
-    const val SESSION = "/orpheon/session"
-    const val LIBRARY = "/orpheon/library"
-    const val TRACKS = "/orpheon/tracks"
-    const val EXTENSIONS = "/orpheon/extensions"
+    const val SESSION = "/melos/session"
+    const val LIBRARY = "/melos/library"
+    const val TRACKS = "/melos/tracks"
+    const val EXTENSIONS = "/melos/extensions"
     private const val MAX_LISTS = 60
     private const val MAX_TRACKS = 500
 
@@ -134,7 +134,7 @@ class WearLinkService : WearableListenerService() {
  * The phone answering its watch straight over the Wi-Fi ([PassLink], sealed with a secret the
  * watch got over the Data Layer), for when that link is down: Bluetooth off or out of range, the
  * phone's Google services unreachable. Runs while this app's process does, once a watch has asked
- * for the session; announced on the network (NSD, `_orpheon._tcp`) so the watch finds the phone
+ * for the session; announced on the network (NSD, `_melos._tcp`) so the watch finds the phone
  * again when its address changed.
  */
 object WatchLan {
@@ -175,7 +175,7 @@ object WatchLan {
 
     private fun announce(context: Context, port: Int, id: String) = runCatching {
         val nsd = context.getSystemService(android.net.nsd.NsdManager::class.java) ?: return@runCatching
-        val info = android.net.nsd.NsdServiceInfo().apply { serviceName = "Orpheon-$id"; serviceType = "_orpheon._tcp"; setPort(port) }
+        val info = android.net.nsd.NsdServiceInfo().apply { serviceName = "Melos-$id"; serviceType = "_melos._tcp"; setPort(port) }
         val listener = object : android.net.nsd.NsdManager.RegistrationListener {
             override fun onServiceRegistered(i: android.net.nsd.NsdServiceInfo) {}
             override fun onRegistrationFailed(i: android.net.nsd.NsdServiceInfo, code: Int) { Logbook.log("watch: not announced on the network ($code)") }

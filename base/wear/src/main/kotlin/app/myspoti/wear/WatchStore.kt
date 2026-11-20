@@ -49,5 +49,5 @@ class WatchStore(context: Context) {
 
     private fun safe(name: String) = name.map { if (it.isLetterOrDigit() || it == '-' || it == '_') it else '_' }.joinToString("") + ".json"
 
-    private companion object { const val ALIAS = "orpheon-watch" }
+    private companion object { const val ALIAS = "melos-watch" }
 }

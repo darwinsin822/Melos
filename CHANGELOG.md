@@ -4,11 +4,11 @@ Each release on GitHub shows its section below. The app shows it too when it off
 
 ## 1.0.0
 
-- 🎧 **A player of extensions**: Orpheon plays your files, Live Radio and what the extensions you install bring; songs, albums and artists come from public catalogs (Deezer, iTunes, MusicBrainz).
+- 🎧 **A player of extensions**: Melos plays your files, Live Radio and what the extensions you install bring; songs, albums and artists come from public catalogs (Deezer, iTunes, MusicBrainz).
 - 🔎 **Catalog songs play from your extensions**: a song found in a search, an album or an artist page goes straight to your audio sources.
 - 👋 **No account needed**: the first launch offers YouTube Music or no account at all.
 - 🧩 **Extensions**: blocks open catalog items (`deezer:album:…`), and `myspoti-cli play` takes them too.
-- 🧩 **An extension-based player**: Orpheon hosts no content and ships no source; the extensions you install are yours to choose, and their sources yours to have the right to use. The store refuses extensions that circumvent a protection, block ads or distribute content without the rights.
+- 🧩 **An extension-based player**: Melos hosts no content and ships no source; the extensions you install are yours to choose, and their sources yours to have the right to use. The store refuses extensions that circumvent a protection, block ads or distribute content without the rights.
 
 ## 2.4.0
 

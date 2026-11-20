@@ -27,8 +27,8 @@ class CliTest {
 
     @Test fun parsesEachCommand() {
         assertEquals(CliCommand.Status, CliParser.parse("status", emptyList()))
-        assertEquals(CliCommand.ExtInstall("/sdcard/Android/data/app.orpheon.beta.dev/files/cli/in/x.zip"),
-            CliParser.parse("ext.install", listOf("/sdcard/Android/data/app.orpheon.beta.dev/files/cli/in/x.zip")))
+        assertEquals(CliCommand.ExtInstall("/sdcard/Android/data/app.melos.beta.dev/files/cli/in/x.zip"),
+            CliParser.parse("ext.install", listOf("/sdcard/Android/data/app.melos.beta.dev/files/cli/in/x.zip")))
         assertEquals(CliCommand.ExtEnable("my.ext", false), CliParser.parse("ext.disable", listOf("my.ext")))
         assertEquals(CliCommand.ExtSetting("my.ext", "quality", "\"high\""), CliParser.parse("ext.setting", listOf("my.ext", "quality", "high")))
         assertEquals(CliCommand.ExtSetting("my.ext", "on", "true"), CliParser.parse("ext.setting", listOf("my.ext", "on", "true")))
@@ -82,7 +82,7 @@ class CliTest {
             harmonic = true, eq = true, show = true, mobileData = false, onNext = "full",
             style = "blend", length = "balanced", tempo = "normal", pulse = "strong",
             durationMin = 10, durationMax = 45, performancePriority = true,
-            orpheon = true, ideas = mapOf("bass-handover" to true, "gentle-tempo" to false),
+            melos = true, ideas = mapOf("bass-handover" to true, "gentle-tempo" to false),
         ).json().jsonObject
         assertEquals(JsonPrimitive(true), json["enabled"])
         assertEquals(JsonPrimitive(false), json["mobile-data"])
@@ -92,7 +92,7 @@ class CliTest {
         assertEquals(JsonPrimitive(45), json["duration-max"])
         assertEquals(JsonPrimitive(true), json["performance-priority"])
         // The Mix Lab's planner and each of its ideas by name, so a listening session can be checked from the CLI.
-        assertEquals(JsonPrimitive(true), json["orpheon"])
+        assertEquals(JsonPrimitive(true), json["melos"])
         assertEquals(JsonPrimitive(true), json["bass-handover"])
         assertEquals(JsonPrimitive(false), json["gentle-tempo"])
         assertEquals(20, json.size)

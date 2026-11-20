@@ -331,13 +331,13 @@ class MainActivity : AppCompatActivity() {
         Logbook.log("onboarding: music account ${com.music.spotui.data.preferences.AccountProviderPref.id} chosen")
     }
 
-    /** A pass QR code (orpheon://pass?…) asks whether to send this phone's setup; voice search plays its best match. */
+    /** A pass QR code (melos://pass?…) asks whether to send this phone's setup; voice search plays its best match. */
     private fun handle(intent: Intent?) {
         intent ?: return
         when (intent.action) {
             Intent.ACTION_VIEW -> {
                 val link = intent.data?.toString() ?: return
-                // A pass QR code opened by the camera (orpheon://pass?…): its confirmation, never a send on its own.
+                // A pass QR code opened by the camera (melos://pass?…): its confirmation, never a send on its own.
                 com.music.spotui.pass.PassLinks.offer(this, link, signedIn)
             }
             android.provider.MediaStore.INTENT_ACTION_MEDIA_PLAY_FROM_SEARCH -> {

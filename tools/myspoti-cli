@@ -7,7 +7,7 @@
   tools/myspoti-cli ext.why 3                             # the last 3 plays through extensions (debug builds)
   tools/myspoti-cli automix.settings                      # read supported AutoMix settings
   tools/myspoti-cli automix.settings tempo wide           # change one supported setting
-  tools/myspoti-cli automix.settings echo-tail off        # Mix Lab: one idea of the Orpheon planner (ideas on|off: all of them)
+  tools/myspoti-cli automix.settings echo-tail off        # Mix Lab: one idea of the Melos planner (ideas on|off: all of them)
   tools/myspoti-cli automix.next                           # player Next path, with AutoMix skip mixing
   tools/myspoti-cli native-play spotify:track:<id>        # the native engine, headless (debug builds)
   tools/myspoti-cli native-log 80                         # its last 80 log lines
@@ -92,7 +92,7 @@ def installed(serial, pkg):
 
 def main():
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("-p", "--package", default=os.environ.get("MYSPOTI_PACKAGE", "app.orpheon.beta.dev"))
+    p.add_argument("-p", "--package", default=os.environ.get("MYSPOTI_PACKAGE", "app.melos.beta.dev"))
     p.add_argument("-s", "--serial", default=os.environ.get("ANDROID_SERIAL"))
     p.add_argument("-t", "--timeout", type=float, default=DEFAULT_TIMEOUT, help="seconds to wait for the reply")
     p.add_argument("--raw", action="store_true", help="print the reply on one line, as the app wrote it")

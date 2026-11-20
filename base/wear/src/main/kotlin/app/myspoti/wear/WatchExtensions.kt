@@ -31,7 +31,7 @@ import java.util.concurrent.ConcurrentHashMap
  * with what was granted there, on or off, their store and their settings; nothing else.
  */
 object WatchExtensions : Host {
-    private const val TAG = "Orpheon"
+    private const val TAG = "Melos"
     class Installed(val id: String, val pkg: ExtensionPackage, val granted: Set<String>)
 
     private lateinit var dir: File

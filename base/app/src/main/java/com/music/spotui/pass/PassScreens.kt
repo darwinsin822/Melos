@@ -156,7 +156,7 @@ fun PassSendConfirm(i: PassInvite, fromLink: Boolean, onDismiss: () -> Unit) {
 }
 
 /**
- * The pass QR codes opened as links (`orpheon://pass?…`, see [PassInvite]): a phone's camera
+ * The pass QR codes opened as links (`melos://pass?…`, see [PassInvite]): a phone's camera
  * scans the code of a TV, a computer or another phone and the app opens on the confirmation,
  * without going through the settings. A link only ever asks: nothing is sent before the user's
  * yes, a link that is not a whole invitation for the local network is refused, and a phone not

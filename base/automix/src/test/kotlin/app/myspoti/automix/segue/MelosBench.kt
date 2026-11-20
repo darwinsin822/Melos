@@ -7,7 +7,7 @@ import java.util.Locale
 import kotlin.math.abs
 
 /**
- * `segue <dir> orpheon [with=orpheon.field:value,...]`: runs the Orpheon planner on pairs of
+ * `segue <dir> melos [with=melos.field:value,...]`: runs the Melos planner on pairs of
  * [SongMap] and compares its plans with reference plans. The bench only compares; it decides nothing.
  *
  * `<dir>/maps/<id>.json` holds one [SongMap] (the keys are its field names; `tempoBpm` and `loudness`
@@ -19,7 +19,7 @@ import kotlin.math.abs
  * Speeds are compared on each side's furthest speed from 1: a ramp's end on the outgoing side, its
  * start on the incoming one.
  */
-object OrpheonBench {
+object MelosBench {
     private val L = Locale.ROOT
     private val EXPONENT = Regex("-?[0-9]+(\\.[0-9]+)?[eE][-+]?[0-9]+")
 
@@ -121,14 +121,14 @@ object OrpheonBench {
             val ref = reference(line)
             val a = map(ref.a); val b = map(ref.b)
             if (a == null || b == null) { missing++; return@forEachLine }
-            rows += compare(ref, a, b, OrpheonPolicy.plan(a, b, OrpheonRequest(tuning = tuning,
+            rows += compare(ref, a, b, MelosPolicy.plan(a, b, MelosRequest(tuning = tuning,
                 minBars = System.getenv("ORPHEON_MIN_BARS")?.toInt(), fadeSec = System.getenv("ORPHEON_FADE_SEC")?.toDouble()),
                 System.getenv("ORPHEON_ONLY")))
         }
         return Report(rows, missing)
     }
 
-    private fun compare(ref: Reference, a: SongMap, b: SongMap, o: OrpheonOutcome): Row {
+    private fun compare(ref: Reference, a: SongMap, b: SongMap, o: MelosOutcome): Row {
         val p = o.decision.plan ?: return Row(ref, "none", "-", null, null, null, null, null, null, null)
         val out = p.outgoing.anchorUs / 1e6; val inn = p.incoming.anchorUs / 1e6
         val nominal = SegueFormat.RATE_NOMINAL.toDouble()
@@ -155,7 +155,7 @@ object OrpheonBench {
 
 /** A [SongMap] from JSON: for the bench only, nothing shipped reads this. */
 internal object SongMapJson {
-    fun read(text: String): Map<*, *> = SegueJson.read(OrpheonBench.plainNumbers(text)) as? Map<*, *> ?: throw SegueFormatException("not an object")
+    fun read(text: String): Map<*, *> = SegueJson.read(MelosBench.plainNumbers(text)) as? Map<*, *> ?: throw SegueFormatException("not an object")
 
     private fun number(v: Any?): Double? = (v as? BigDecimal)?.toDouble()
 
